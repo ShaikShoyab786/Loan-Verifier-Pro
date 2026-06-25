@@ -1,0 +1,1 @@
+- [Supabase SSR WebSocket + Google OAuth](supabase-ssr-websocket.md) — supabase-js createClient throws under Node <22 (no global WebSocket) in server fns/SSR; polyfill ws in start.ts. Google OAuth moved off Lovable Cloud to native Supabase.
