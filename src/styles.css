@@ -1,0 +1,482 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Design system definition.
+ *
+ * The @theme inline block maps CSS custom properties to Tailwind utility
+ * classes (e.g. --color-primary -> bg-primary, text-primary).
+ *
+ * The :root and .dark blocks define the actual color values using oklch.
+ * All colors MUST use oklch format.
+ *
+ * To add a new semantic color:
+ * 1. Add the variable to :root (light value) and .dark (dark value)
+ * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ */
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-ring-offset-background: var(--background);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+:root {
+  --radius: 0.75rem;
+  --background: oklch(0.99 0.005 250);
+  --foreground: oklch(0.18 0.04 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.04 255);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.04 255);
+  --primary: oklch(0.38 0.14 258);
+  --primary-foreground: oklch(0.98 0.005 250);
+  --secondary: oklch(0.96 0.012 250);
+  --secondary-foreground: oklch(0.25 0.06 258);
+  --muted: oklch(0.965 0.01 250);
+  --muted-foreground: oklch(0.5 0.03 255);
+  --accent: oklch(0.95 0.025 255);
+  --accent-foreground: oklch(0.25 0.08 258);
+  --destructive: oklch(0.6 0.23 25);
+  --destructive-foreground: oklch(0.98 0.005 250);
+  --border: oklch(0.92 0.012 250);
+  --input: oklch(0.92 0.012 250);
+  --ring: oklch(0.38 0.14 258);
+  --chart-1: oklch(0.55 0.18 258);
+  --chart-2: oklch(0.65 0.15 200);
+  --chart-3: oklch(0.7 0.16 160);
+  --chart-4: oklch(0.75 0.17 80);
+  --chart-5: oklch(0.65 0.2 30);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.18 0.04 255);
+  --sidebar-primary: oklch(0.38 0.14 258);
+  --sidebar-primary-foreground: oklch(0.98 0.005 250);
+  --sidebar-accent: oklch(0.96 0.018 255);
+  --sidebar-accent-foreground: oklch(0.25 0.08 258);
+  --sidebar-border: oklch(0.93 0.012 250);
+  --sidebar-ring: oklch(0.38 0.14 258);
+}
+
+.dark {
+  --background: oklch(0.129 0.042 264.695);
+  --foreground: oklch(0.984 0.003 247.858);
+  --card: oklch(0.208 0.042 265.755);
+  --card-foreground: oklch(0.984 0.003 247.858);
+  --popover: oklch(0.208 0.042 265.755);
+  --popover-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.929 0.013 255.508);
+  --primary-foreground: oklch(0.208 0.042 265.755);
+  --secondary: oklch(0.279 0.041 260.031);
+  --secondary-foreground: oklch(0.984 0.003 247.858);
+  --muted: oklch(0.279 0.041 260.031);
+  --muted-foreground: oklch(0.704 0.04 256.788);
+  --accent: oklch(0.279 0.041 260.031);
+  --accent-foreground: oklch(0.984 0.003 247.858);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.984 0.003 247.858);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.551 0.027 264.364);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.208 0.042 265.755);
+  --sidebar-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-accent: oklch(0.279 0.041 260.031);
+  --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.551 0.027 264.364);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html, body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  #root {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  /* Prevent any single element from forcing horizontal scroll on mobile */
+  img, svg, video, canvas, iframe, table {
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   Mobile verification workflow utilities
+   ============================================================ */
+@media (max-width: 767px) {
+  /* Give the sticky bottom action bar breathing room above page content */
+  main {
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Sticky bottom action bar on each verification module */
+  .module-action-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: var(--card);
+    box-shadow: 0 -6px 18px -10px rgba(15, 23, 42, 0.25);
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Mobile: render the trailing button group as a 2-row layout
+     (Save Draft + Save & Return on row 1, Save & Continue full-width on row 2). */
+  .mobile-actions > div:last-child {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5rem !important;
+    width: 100%;
+  }
+  .mobile-actions > div:last-child > :nth-child(3) {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+
+/* ============================================================
+   Print-ready Report layout (Preview = PDF)
+   ============================================================ */
+.report-page {
+  box-sizing: border-box;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 18mm 16mm;
+  margin: 0 auto 14px auto;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 10px 24px -12px rgba(0, 0, 0, 0.12);
+  position: relative;
+  font-family: "Georgia", "Times New Roman", serif;
+}
+.report-page:last-child { page-break-after: auto; break-after: auto; }
+.report-no-break { page-break-inside: avoid; break-inside: avoid; }
+.report-keep-with-next { page-break-after: avoid; break-after: avoid; }
+
+/* Professional document-style font for ID-like values (PAN, Aadhaar, UDIN,
+   mobile / account / IFSC / GST / registration numbers). Resembles official
+   identification fields on CA / banking paperwork. */
+.report-id-value {
+  font-family: "Courier New", "Liberation Mono", "Consolas", "Menlo", monospace;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #0f172a;
+}
+
+/* Image frame for supporting documents:
+   - Single-column layout: each image occupies its own row at full width
+   - Fixed A4-safe height so images remain clearly visible
+   - object-contain so the FULL image is visible (no face cropping)
+   - Top-aligned fallback (object-position: top) for any rare overflow */
+.report-image-frame {
+  width: 100%;
+  height: 95mm;
+  background: #f8fafc;
+}
+.report-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center top;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+@media print {
+  .report-image-frame { height: 95mm; }
+}
+
+/* PDF-reader style preview shell. The report ALWAYS renders as A4 pages
+   (210mm × 297mm). On smaller viewports, the pages are scaled down via a
+   CSS variable so the user sees the EXACT PDF layout — never a reflowed
+   mobile version. Mimics Adobe Reader / Google Drive PDF viewer. */
+.report-shell {
+  background: #525659 !important;
+  padding: 16px 8px !important;
+  margin: 0 !important;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.report-pdf-viewport {
+  --pdf-scale: 1;
+  width: max-content;
+  min-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 8px;
+}
+
+.report-pdf-viewport .report-page {
+  transform: scale(var(--pdf-scale));
+  transform-origin: top left;
+  margin: 0 !important;
+  max-width: none;
+  /* Collapse the empty horizontal space so the scaled page actually fits
+     within the viewport width (prevents right-edge clipping on mobile). */
+  margin-right: calc(0px - 210mm * (1 - var(--pdf-scale))) !important;
+  /* Collapse the empty vertical space so pages stack tightly. */
+  margin-bottom: calc(14px - (1 - var(--pdf-scale)) * 297mm) !important;
+}
+
+@media print {
+  @page { size: A4; margin: 0; }
+  html, body { background: #ffffff !important; }
+  .no-print { display: none !important; }
+  .report-shell {
+    background: #ffffff !important;
+    padding: 0 !important;
+  }
+  .report-pdf-viewport { --pdf-scale: 1 !important; }
+  .report-pdf-viewport {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+  }
+  .report-pdf-viewport .report-page,
+  .report-page {
+    transform: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    padding: 18mm 16mm !important;
+    font-size: initial;
+    line-height: initial;
+    page-break-after: always;
+    break-after: page;
+  }
+}
+
+/* ============================================================
+   PDF export overrides (html2canvas safe colors)
+   html2canvas cannot parse oklch()/oklab()/lab(). While the
+   .pdf-export class is applied (during Download PDF), every
+   theme token resolves to a plain hex value so the canvas
+   serializer succeeds. The class is removed immediately after.
+   ============================================================ */
+.pdf-export,
+.pdf-export * {
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #1e3a8a;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e2e8f0;
+  --accent-foreground: #1e293b;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #1e3a8a;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #8b5cf6;
+  --chart-5: #ef4444;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #1e3a8a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2e8f0;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #1e3a8a;
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-foreground: #0f172a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #0f172a;
+  --color-primary: #1e3a8a;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f1f5f9;
+  --color-secondary-foreground: #1e293b;
+  --color-muted: #f1f5f9;
+  --color-muted-foreground: #64748b;
+  --color-accent: #e2e8f0;
+  --color-accent-foreground: #1e293b;
+  --color-destructive: #dc2626;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #e2e8f0;
+  --color-input: #e2e8f0;
+  --color-ring: #1e3a8a;
+  --color-ring-offset-background: #ffffff;
+  --color-chart-1: #3b82f6;
+  --color-chart-2: #10b981;
+  --color-chart-3: #f59e0b;
+  --color-chart-4: #8b5cf6;
+  --color-chart-5: #ef4444;
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #0f172a;
+  --color-sidebar-primary: #1e3a8a;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #e2e8f0;
+  --color-sidebar-accent-foreground: #1e293b;
+  --color-sidebar-border: #e2e8f0;
+  --color-sidebar-ring: #1e3a8a;
+}
+
+.pdf-export .bg-white { background-color: #ffffff !important; }
+.pdf-export .bg-slate-50 { background-color: #f8fafc !important; }
+.pdf-export .bg-slate-100 { background-color: #f1f5f9 !important; }
+.pdf-export .bg-slate-500 { background-color: #64748b !important; }
+.pdf-export .bg-slate-900 { background-color: #0f172a !important; }
+.pdf-export .bg-emerald-600 { background-color: #059669 !important; }
+.pdf-export .bg-amber-600 { background-color: #d97706 !important; }
+.pdf-export .bg-rose-600 { background-color: #e11d48 !important; }
+
+.pdf-export .text-white { color: #ffffff !important; }
+.pdf-export .text-slate-400 { color: #94a3b8 !important; }
+.pdf-export .text-slate-500 { color: #64748b !important; }
+.pdf-export .text-slate-600 { color: #475569 !important; }
+.pdf-export .text-slate-700 { color: #334155 !important; }
+.pdf-export .text-slate-800 { color: #1e293b !important; }
+.pdf-export .text-slate-900 { color: #0f172a !important; }
+.pdf-export .text-emerald-600 { color: #059669 !important; }
+.pdf-export .text-emerald-700 { color: #047857 !important; }
+.pdf-export .text-rose-600 { color: #e11d48 !important; }
+.pdf-export .text-rose-700 { color: #be123c !important; }
+
+.pdf-export .border-slate-200 { border-color: #e2e8f0 !important; }
+.pdf-export .border-slate-300 { border-color: #cbd5e1 !important; }
+.pdf-export .border-slate-400 { border-color: #94a3b8 !important; }
+.pdf-export .border-slate-900 { border-color: #0f172a !important; }
+
+/* ============================================================
+   Report polish — scoped colors, page-break safety, Page-1 block
+   ============================================================ */
+
+/* Pure white pages, black body text, navy section headings. */
+.report-page,
+.pdf-export .report-page {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+.report-page h1,
+.report-page h2,
+.report-page h3,
+.pdf-export .report-page h1,
+.pdf-export .report-page h2,
+.pdf-export .report-page h3 {
+  color: #0b1f4d !important;
+}
+/* Kill washed-out greys inside the report (scoped, not global). */
+.report-page .text-slate-400,
+.report-page .text-slate-500,
+.report-page .text-slate-600,
+.pdf-export .report-page .text-slate-400,
+.pdf-export .report-page .text-slate-500,
+.pdf-export .report-page .text-slate-600 {
+  color: #111827 !important;
+}
+
+/* Long-table page-break safety inside reports.
+   Repeat <thead> across pages; keep header row intact.
+   Do NOT apply page-break-inside: avoid to tbody/tr/table — long
+   tables must flow naturally across pages. */
+.report-page h2,
+.report-page h3,
+.report-page h4 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+.report-page table thead {
+  display: table-header-group;
+}
+.report-page table thead tr {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Each image + caption stays together. */
+.report-image-frame,
+.report-page .report-image-frame {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Page-1 self-contained: Summary + merged Guarantor/Date/Opinion table.
+   Signature lives outside this block (on the last summary page).
+   Keep readable padding so text doesn't kiss table borders. */
+.report-page-one-block {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+.report-page-one-block > * + * {
+  margin-top: 0.6rem !important;
+}
+.report-page-one-block table td,
+.report-page-one-block table th {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  font-size: 11.5px !important;
+  line-height: 1.45 !important;
+}
+
+
+
+
