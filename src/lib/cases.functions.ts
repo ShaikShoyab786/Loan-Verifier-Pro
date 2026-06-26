@@ -311,6 +311,18 @@ export const upsertCase = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
 
+    // 0. Managers review only — they never own or edit cases. Block their writes
+    //    server-side so a manager session can never create a duplicate case row
+    //    (case_number + assigned_to lookup would otherwise insert under the manager).
+    const { data: mgrRow, error: mgrErr } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "manager")
+      .maybeSingle();
+    if (mgrErr) throw new Error(mgrErr.message);
+    if (mgrRow) throw new Error("Forbidden: managers cannot edit cases");
+
     // 1. Resolve the user's own case row. Case numbers are visible per account,
     //    so another user's VER-YYYY-#### must never be treated as this user's row.
     const { data: existingCase, error: exCErr } = await supabase

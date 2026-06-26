@@ -1,4 +1,4 @@
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -58,6 +58,12 @@ import { Lock } from "lucide-react";
 
 export const Route = createFileRoute("/_app/verifications/workspace")({
   head: () => ({ meta: [{ title: "Verification Workspace — VerifyPro" }] }),
+  beforeLoad: ({ context }) => {
+    // Managers review only — keep them out of the case-editing workspace entirely.
+    if ((context as { isManager?: boolean }).isManager) {
+      throw redirect({ to: "/dashboard" });
+    }
+  },
   component: WorkspacePage,
 });
 

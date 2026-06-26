@@ -52,6 +52,9 @@ export const Route = createFileRoute("/_app")({
       roles = [];
     }
     const isManager = roles.includes("manager");
+    // Lock all field-editing actions for manager sessions before any route renders.
+    // Managers review only; this prevents edits even via direct route navigation.
+    useVerificationStore.getState().setManagerSession(isManager);
     return { user: data.user, roles, isManager };
   },
   component: AppLayout,

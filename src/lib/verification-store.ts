@@ -314,6 +314,9 @@ type State = {
   caseOrder: string[];
   activeCaseId: string | null;
   isHydrated: boolean;
+  /** True when the signed-in user is a manager. Managers review only — they must
+   *  never edit case field data, even via direct route navigation. */
+  isManagerSession: boolean;
   // Mirrors of the active case for backwards-compatible selectors
   applicants: Applicant[];
   activeApplicantId: string;
@@ -325,6 +328,7 @@ type Actions = {
   loadCase: (id: string) => void;
   deleteCase: (id: string) => void;
   setCaseStatus: (id: string, status: CaseStatus) => void;
+  setManagerSession: (isManager: boolean) => void;
   setActive: (id: string) => void;
   addCoApplicant: () => void;
   removeApplicant: (id: string) => void;
@@ -440,9 +444,12 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   caseOrder: [],
   activeCaseId: initialActiveCaseId,
   isHydrated: false,
+  isManagerSession: false,
   applicants: [],
   activeApplicantId: "",
   modules: {},
+
+  setManagerSession: (isManager) => set(() => ({ isManagerSession: isManager })),
 
   hydrateAll: (cases, caseOrder) =>
     set((s) => {
@@ -473,6 +480,7 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
       caseOrder: [],
       activeCaseId: null,
       isHydrated: false,
+      isManagerSession: false,
       applicants: [],
       activeApplicantId: "",
       modules: {},
@@ -666,9 +674,12 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   },
 }));
 
-/** True when the active case has been submitted/approved and must not be edited. */
+/** True when edits to the active case must be blocked. Managers can only review,
+ *  so every editing action is locked for a manager session regardless of status.
+ *  Otherwise a case is locked once submitted/approved. */
 function isActiveLocked(): boolean {
   const s = useVerificationStore.getState();
+  if (s.isManagerSession) return true;
   const c = s.activeCaseId ? s.cases[s.activeCaseId] : null;
   return !!c && isCaseLocked(c.status);
 }

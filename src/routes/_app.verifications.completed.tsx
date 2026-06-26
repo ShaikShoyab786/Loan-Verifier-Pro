@@ -178,7 +178,12 @@ function CaseRow({
       <span className="hidden sm:block text-sm truncate">{c.loanType || "—"}</span>
       <span className="hidden sm:block text-sm tabular-nums">
         {formatINR(c.loanAmount)}
-        {reviewed && <span className="block text-[11px] text-muted-foreground">Approved {reviewed}</span>}
+        {reviewed && (
+          <span className="block text-[11px] text-muted-foreground">
+            Approved {reviewed}
+            {c.reviewedByName ? ` · by ${c.reviewedByName}` : ""}
+          </span>
+        )}
       </span>
       <Button size="sm" className="h-8" onClick={() => onOpen(c.id)}>
         {downloadable ? <Download className="h-3.5 w-3.5 mr-1.5" /> : null}
