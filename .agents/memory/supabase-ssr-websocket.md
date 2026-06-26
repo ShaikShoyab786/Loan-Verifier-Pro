@@ -38,3 +38,16 @@ endpoint that 404s off Lovable. Replaced with native
 It only works once the Google provider is enabled in the Supabase dashboard
 (client id/secret + redirect URLs); until then Supabase returns a clean
 "Unsupported provider: missing OAuth secret" error instead of a 404.
+
+# Client/server pointing at DIFFERENT Supabase projects (Lovable import)
+This project stores `VITE_SUPABASE_URL` / `VITE_SUPABASE_PUBLISHABLE_KEY` / `VITE_SUPABASE_PROJECT_ID`
+as **shared environment variables** (Lovable import default), while `SUPABASE_URL` etc. are **secrets**.
+A shared env var SHADOWS a secret of the same name in process.env, so `requestEnvVar` (which writes a
+secret) silently fails to change the effective value — you must overwrite the shared env var with
+`setEnvVars({environment:"shared"})`.
+
+**Symptom of a mismatch:** browser logs in against the client project, server validates the token against
+its own (different) project → BOTH "Failed to sync your cases from the cloud" (token rejected by server fn)
+AND Google "Unsupported provider: missing OAuth secret" (browser hits a project where Google isn't enabled).
+**Fix:** make VITE_* (client) and the plain SUPABASE_* (server) point to the SAME project ref.
+The publishable/anon key and URL are browser-public, so storing them as plain shared env vars is fine.
