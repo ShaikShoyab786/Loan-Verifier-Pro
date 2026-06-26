@@ -148,7 +148,8 @@ function BusinessObservationsPage() {
     toast.success("Business activity verification completed", {
       description: `${activeLabel}'s business activity verification has been saved.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "business");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "business", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

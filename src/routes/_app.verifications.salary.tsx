@@ -133,7 +133,8 @@ function SalaryVerificationPage() {
     toast.success("Salary / Form-16 Verification completed", {
       description: `${activeLabel}'s salary verification has been saved.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "salary");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "salary", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

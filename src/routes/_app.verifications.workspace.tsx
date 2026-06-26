@@ -14,6 +14,7 @@ import {
   Receipt,
   FolderCheck,
   Building2,
+  Landmark,
   ImageUp,
   ClipboardList,
   ClipboardCheck,
@@ -45,6 +46,7 @@ import {
   MODULE_KEYS,
   isModuleApplicable,
   isModuleVisible,
+  isPropertyLoanType,
   labelApplicants,
   useVerificationStore,
   type ModuleKey,
@@ -66,6 +68,7 @@ const modules: { key: ModuleKey; label: string; icon: typeof Home; desc: string;
   { key: "salary", label: "Salary / Form-16 Verification", icon: Receipt, desc: "Income proofs & payslips", to: "/verifications/salary" },
   { key: "documents", label: "Documents Verification", icon: FolderCheck, desc: "KYC & supporting documents", to: "/verifications/documents" },
   { key: "business", label: "Business Activity Verification", icon: Building2, desc: "Business premises & activity", to: "/verifications/business" },
+  { key: "property", label: "Property Details Verification", icon: Landmark, desc: "Collateral property & site visit", to: "/verifications/property" },
   { key: "evidence", label: "Evidence Upload", icon: ImageUp, desc: "Photos, geo-tags & attachments", to: "/verifications/evidence" },
   { key: "feedback", label: "Final Feedback", icon: ClipboardCheck, desc: "Final verification outcome per person", to: "/verifications/feedback" },
 ];
@@ -154,7 +157,11 @@ function WorkspacePage() {
   const labeled = labelApplicants(applicants);
   const activeLabel = labeled.find((a) => a.id === activeId)?.label ?? "Applicant";
 
-  const applicableKeys = MODULE_KEYS.filter((k) => isModuleApplicable(moduleState, k));
+  const loanType = activeCase.loanType;
+  const visibleModules = modules.filter(
+    (m) => isModuleVisible(moduleState, m.key) && (m.key !== "property" || isPropertyLoanType(loanType)),
+  );
+  const applicableKeys = MODULE_KEYS.filter((k) => isModuleApplicable(moduleState, k, loanType));
   const completedCount = applicableKeys.filter(
     (k) => moduleState?.[k]?.status === "completed",
   ).length;
@@ -268,7 +275,7 @@ function WorkspacePage() {
             {labeled.map((a) => {
               const active = a.id === activeId;
               const mods = useVerificationStore.getState().modules[a.id];
-              const appKeys = MODULE_KEYS.filter((k) => isModuleApplicable(mods, k));
+              const appKeys = MODULE_KEYS.filter((k) => isModuleApplicable(mods, k, loanType));
               const done = appKeys.filter((k) => mods?.[k]?.status === "completed").length;
               return (
                 <div
@@ -323,9 +330,9 @@ function WorkspacePage() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            {modules.filter((m) => isModuleVisible(moduleState, m.key)).map((m) => {
+            {visibleModules.map((m) => {
               const Icon = m.icon;
-              const applicable = isModuleApplicable(moduleState, m.key);
+              const applicable = isModuleApplicable(moduleState, m.key, loanType);
               const status = (moduleState?.[m.key]?.status ?? "not_started") as ModuleStatus;
               const pct = !applicable ? 0 : status === "completed" ? 100 : status === "in_progress" ? 50 : 0;
               const card = (
@@ -382,8 +389,8 @@ function WorkspacePage() {
           </div>
 
           <div className="mt-5 space-y-2">
-            {modules.filter((m) => isModuleVisible(moduleState, m.key)).map((m) => {
-              const applicable = isModuleApplicable(moduleState, m.key);
+            {visibleModules.map((m) => {
+              const applicable = isModuleApplicable(moduleState, m.key, loanType);
               const status = (moduleState?.[m.key]?.status ?? "not_started") as ModuleStatus;
               return (
                 <div key={m.key} className="flex items-center justify-between rounded-lg px-2 py-2 hover:bg-muted/60 transition-colors">

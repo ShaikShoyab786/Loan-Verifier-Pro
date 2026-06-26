@@ -10,6 +10,7 @@ export const MODULE_KEYS = [
   "salary",
   "documents",
   "business",
+  "property",
   "evidence",
   "feedback",
 ] as const;
@@ -113,6 +114,14 @@ export const BUSINESS_CATEGORIES: EmploymentCategory[] = [
   "business_owner",
   "self_employed",
 ];
+
+/** Loan types for which the Property Details (collateral) module is shown. */
+export const PROPERTY_LOAN_TYPES = ["Home Loan", "Mortgage Loan"] as const;
+
+/** True when the case's loan type requires collateral property verification. */
+export function isPropertyLoanType(loanType: string | undefined): boolean {
+  return !!loanType && (PROPERTY_LOAN_TYPES as readonly string[]).includes(loanType);
+}
 
 export type EmploymentDetails = {
   employmentCategory: EmploymentCategory;
@@ -230,6 +239,28 @@ export type FinalFeedbackDetails = {
   guarantorItems?: Partial<Record<FinalFeedbackItemKey, FinalFeedbackStatus>>;
 };
 
+export type PropertyDetails = {
+  addressOfProperty: string;
+  addressMatchesApplication: "yes" | "no" | "";
+  ownerName: string;
+  typeOfProperty: string;
+  locality: string;
+  ownership: string;
+  typeOfConstruction: string;
+  stageOfConstruction: string;
+  independentAccess: "yes" | "no" | "";
+  accessType: string;
+  buildingUsageType: string;
+  builderName: string;
+  builderReputation: string;
+  builderSource: string;
+  builderStage: string;
+  workInProgress: string;
+  likelyCompletionDate: string;
+  dateOfSiteVisit: string;
+  verifierRemarks: string;
+};
+
 export type ModuleData = {
   status: ModuleStatus;
   general?: Partial<GeneralDetails>;
@@ -239,6 +270,7 @@ export type ModuleData = {
   salary?: Partial<SalaryDetails>;
   documents?: Partial<DocumentsDetails>;
   business?: Partial<BusinessDetails>;
+  property?: Partial<PropertyDetails>;
   evidence?: Partial<EvidenceDetails>;
   feedback?: Partial<FinalFeedbackDetails>;
 };
@@ -285,6 +317,7 @@ type Actions = {
   saveSalary: (a: string, d: Partial<SalaryDetails>, s: ModuleStatus) => void;
   saveDocuments: (a: string, d: Partial<DocumentsDetails>, s: ModuleStatus) => void;
   saveBusiness: (a: string, d: Partial<BusinessDetails>, s: ModuleStatus) => void;
+  saveProperty: (a: string, d: Partial<PropertyDetails>, s: ModuleStatus) => void;
   saveEvidence: (a: string, d: Partial<EvidenceDetails>, s: ModuleStatus) => void;
   saveFeedback: (a: string, d: Partial<FinalFeedbackDetails>, s: ModuleStatus) => void;
   saveDraftActiveCase: () => void;
@@ -563,6 +596,7 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   saveSalary: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "salary", "salary", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
   saveDocuments: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "documents", "documents", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
   saveBusiness: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "business", "business", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveProperty: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "property", "property", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
   saveEvidence: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "evidence", "evidence", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
   saveFeedback: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "feedback", "feedback", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
 }));
@@ -671,6 +705,7 @@ export const MODULE_META: Record<ModuleKey, { label: string }> = {
   salary: { label: "Salary / Form-16 Verification" },
   documents: { label: "Documents Verification" },
   business: { label: "Business Activity Verification" },
+  property: { label: "Property Details Verification" },
   evidence: { label: "Evidence Upload" },
   feedback: { label: "Final Feedback" },
 };
@@ -695,7 +730,11 @@ export function selectCaseList(state: State): VerificationCase[] {
 export function isModuleApplicable(
   modules: Record<ModuleKey, ModuleData> | undefined,
   key: ModuleKey,
+  loanType?: string,
 ): boolean {
+  if (key === "property") {
+    return isPropertyLoanType(loanType);
+  }
   if (!modules) return true;
   const cat = (modules.employment?.employment as Partial<EmploymentDetails> | undefined)
     ?.employmentCategory ?? "";
@@ -734,8 +773,9 @@ export function isModuleVisible(
 
 export function applicableModuleKeys(
   modules: Record<ModuleKey, ModuleData> | undefined,
+  loanType?: string,
 ): ModuleKey[] {
-  return MODULE_KEYS.filter((k) => isModuleApplicable(modules, k));
+  return MODULE_KEYS.filter((k) => isModuleApplicable(modules, k, loanType));
 }
 
 /**
@@ -748,6 +788,7 @@ export function applicableModuleKeys(
  */
 export function workflowModuleKeys(
   modules: Record<ModuleKey, ModuleData> | undefined,
+  loanType?: string,
 ): ModuleKey[] {
   const cat = (modules?.employment?.employment as Partial<EmploymentDetails> | undefined)
     ?.employmentCategory ?? "";
@@ -772,6 +813,9 @@ export function workflowModuleKeys(
     if (k === "business") {
       return BUSINESS_CATEGORIES.includes(cat as EmploymentCategory);
     }
+    if (k === "property") {
+      return isPropertyLoanType(loanType);
+    }
     return true;
   });
 }
@@ -784,6 +828,7 @@ export const MODULE_ROUTE: Record<ModuleKey, string> = {
   salary: "/verifications/salary",
   documents: "/verifications/documents",
   business: "/verifications/business",
+  property: "/verifications/property",
   evidence: "/verifications/evidence",
   feedback: "/verifications/feedback",
 };
@@ -797,8 +842,9 @@ export const MODULE_ROUTE: Record<ModuleKey, string> = {
 export function nextModuleRoute(
   modules: Record<ModuleKey, ModuleData> | undefined,
   current: ModuleKey,
+  loanType?: string,
 ): string {
-  const seq = workflowModuleKeys(modules);
+  const seq = workflowModuleKeys(modules, loanType);
   const i = seq.indexOf(current);
   if (i >= 0 && i < seq.length - 1) return MODULE_ROUTE[seq[i + 1]];
   return "/verifications/workspace";

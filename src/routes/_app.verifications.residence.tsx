@@ -240,7 +240,8 @@ function ResidenceVerificationPage() {
     toast.success("Residence verification completed", {
       description: `${activeLabel}'s residence has been verified.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "residence");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "residence", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

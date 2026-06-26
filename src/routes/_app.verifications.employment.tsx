@@ -338,7 +338,8 @@ function EmploymentVerificationPage() {
       toast.success("Marked Not Applicable", {
         description: `Employment verification is not applicable for ${categoryOptions.find((c) => c.value === cat)?.label}.`,
       });
-      const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "employment");
+      const __st = useVerificationStore.getState();
+      const __next = nextModuleRoute(__st.modules[activeId], "employment", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
       navigate({ to: __next });
       return;
     }
@@ -352,7 +353,8 @@ function EmploymentVerificationPage() {
     toast.success("Employment verification completed", {
       description: `${activeLabel}'s employment has been verified.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "employment");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "employment", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

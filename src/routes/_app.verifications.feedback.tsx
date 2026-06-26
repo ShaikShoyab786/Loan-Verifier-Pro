@@ -146,7 +146,8 @@ function FinalFeedbackPage() {
       return;
     }
     handleSave(true);
-    const next = nextModuleRoute(modulesByApp[primaryId], "feedback");
+    const __st = useVerificationStore.getState();
+    const next = nextModuleRoute(modulesByApp[primaryId], "feedback", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: next });
   };
 

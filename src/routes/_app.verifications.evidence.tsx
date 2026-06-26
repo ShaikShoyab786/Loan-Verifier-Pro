@@ -383,9 +383,11 @@ function EvidenceUploadPage() {
       toast.error("Upload at least one supporting file before continuing.");
       return;
     }
+    const __st = useVerificationStore.getState();
     const next = nextModuleRoute(
-      useVerificationStore.getState().modules[activeId],
+      __st.modules[activeId],
       "evidence",
+      __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined,
     );
     return runSave(
       "completed",

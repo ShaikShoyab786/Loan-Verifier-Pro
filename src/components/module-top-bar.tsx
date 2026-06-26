@@ -15,8 +15,11 @@ export function ModuleTopBar() {
   const activeCaseId = useVerificationStore((s) => s.activeCaseId);
   const activeApplicantId = useVerificationStore((s) => s.activeApplicantId);
   const moduleState = useVerificationStore((s) => s.modules[activeApplicantId]);
+  const loanType = useVerificationStore((s) =>
+    s.activeCaseId ? s.cases[s.activeCaseId]?.loanType : undefined,
+  );
 
-  const applicableKeys = MODULE_KEYS.filter((k) => isModuleApplicable(moduleState, k));
+  const applicableKeys = MODULE_KEYS.filter((k) => isModuleApplicable(moduleState, k, loanType));
   const completedCount = applicableKeys.filter(
     (k) => moduleState?.[k]?.status === "completed",
   ).length;

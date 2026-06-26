@@ -138,7 +138,8 @@ function DocumentsVerificationPage() {
     toast.success("Documents Verification completed", {
       description: `${activeLabel}'s documents verification has been saved.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "documents");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "documents", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

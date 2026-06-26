@@ -236,7 +236,8 @@ function GeneralDetailsPage() {
         id: toastId,
         description: `${activeLabel}'s general details have been saved.`,
       });
-      const next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "general");
+      const __st = useVerificationStore.getState();
+      const next = nextModuleRoute(__st.modules[activeId], "general", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
       navigate({ to: next });
     } catch (err) {
       console.error("[general-save] continue failed", err);

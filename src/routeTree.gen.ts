@@ -20,6 +20,7 @@ import { Route as AppVerificationsWorkspaceRouteImport } from './routes/_app.ver
 import { Route as AppVerificationsSalaryRouteImport } from './routes/_app.verifications.salary'
 import { Route as AppVerificationsResidenceRouteImport } from './routes/_app.verifications.residence'
 import { Route as AppVerificationsReportRouteImport } from './routes/_app.verifications.report'
+import { Route as AppVerificationsPropertyRouteImport } from './routes/_app.verifications.property'
 import { Route as AppVerificationsPanRouteImport } from './routes/_app.verifications.pan'
 import { Route as AppVerificationsNewRouteImport } from './routes/_app.verifications.new'
 import { Route as AppVerificationsGeneralRouteImport } from './routes/_app.verifications.general'
@@ -87,6 +88,12 @@ const AppVerificationsReportRoute = AppVerificationsReportRouteImport.update({
   path: '/verifications/report',
   getParentRoute: () => AppRoute,
 } as any)
+const AppVerificationsPropertyRoute =
+  AppVerificationsPropertyRouteImport.update({
+    id: '/verifications/property',
+    path: '/verifications/property',
+    getParentRoute: () => AppRoute,
+  } as any)
 const AppVerificationsPanRoute = AppVerificationsPanRouteImport.update({
   id: '/verifications/pan',
   path: '/verifications/pan',
@@ -161,6 +168,7 @@ export interface FileRoutesByFullPath {
   '/verifications/general': typeof AppVerificationsGeneralRoute
   '/verifications/new': typeof AppVerificationsNewRoute
   '/verifications/pan': typeof AppVerificationsPanRoute
+  '/verifications/property': typeof AppVerificationsPropertyRoute
   '/verifications/report': typeof AppVerificationsReportRoute
   '/verifications/residence': typeof AppVerificationsResidenceRoute
   '/verifications/salary': typeof AppVerificationsSalaryRoute
@@ -183,6 +191,7 @@ export interface FileRoutesByTo {
   '/verifications/general': typeof AppVerificationsGeneralRoute
   '/verifications/new': typeof AppVerificationsNewRoute
   '/verifications/pan': typeof AppVerificationsPanRoute
+  '/verifications/property': typeof AppVerificationsPropertyRoute
   '/verifications/report': typeof AppVerificationsReportRoute
   '/verifications/residence': typeof AppVerificationsResidenceRoute
   '/verifications/salary': typeof AppVerificationsSalaryRoute
@@ -207,6 +216,7 @@ export interface FileRoutesById {
   '/_app/verifications/general': typeof AppVerificationsGeneralRoute
   '/_app/verifications/new': typeof AppVerificationsNewRoute
   '/_app/verifications/pan': typeof AppVerificationsPanRoute
+  '/_app/verifications/property': typeof AppVerificationsPropertyRoute
   '/_app/verifications/report': typeof AppVerificationsReportRoute
   '/_app/verifications/residence': typeof AppVerificationsResidenceRoute
   '/_app/verifications/salary': typeof AppVerificationsSalaryRoute
@@ -231,6 +241,7 @@ export interface FileRouteTypes {
     | '/verifications/general'
     | '/verifications/new'
     | '/verifications/pan'
+    | '/verifications/property'
     | '/verifications/report'
     | '/verifications/residence'
     | '/verifications/salary'
@@ -253,6 +264,7 @@ export interface FileRouteTypes {
     | '/verifications/general'
     | '/verifications/new'
     | '/verifications/pan'
+    | '/verifications/property'
     | '/verifications/report'
     | '/verifications/residence'
     | '/verifications/salary'
@@ -276,6 +288,7 @@ export interface FileRouteTypes {
     | '/_app/verifications/general'
     | '/_app/verifications/new'
     | '/_app/verifications/pan'
+    | '/_app/verifications/property'
     | '/_app/verifications/report'
     | '/_app/verifications/residence'
     | '/_app/verifications/salary'
@@ -368,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppVerificationsReportRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/verifications/property': {
+      id: '/_app/verifications/property'
+      path: '/verifications/property'
+      fullPath: '/verifications/property'
+      preLoaderRoute: typeof AppVerificationsPropertyRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/verifications/pan': {
       id: '/_app/verifications/pan'
       path: '/verifications/pan'
@@ -455,6 +475,7 @@ interface AppRouteChildren {
   AppVerificationsGeneralRoute: typeof AppVerificationsGeneralRoute
   AppVerificationsNewRoute: typeof AppVerificationsNewRoute
   AppVerificationsPanRoute: typeof AppVerificationsPanRoute
+  AppVerificationsPropertyRoute: typeof AppVerificationsPropertyRoute
   AppVerificationsReportRoute: typeof AppVerificationsReportRoute
   AppVerificationsResidenceRoute: typeof AppVerificationsResidenceRoute
   AppVerificationsSalaryRoute: typeof AppVerificationsSalaryRoute
@@ -475,6 +496,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppVerificationsGeneralRoute: AppVerificationsGeneralRoute,
   AppVerificationsNewRoute: AppVerificationsNewRoute,
   AppVerificationsPanRoute: AppVerificationsPanRoute,
+  AppVerificationsPropertyRoute: AppVerificationsPropertyRoute,
   AppVerificationsReportRoute: AppVerificationsReportRoute,
   AppVerificationsResidenceRoute: AppVerificationsResidenceRoute,
   AppVerificationsSalaryRoute: AppVerificationsSalaryRoute,

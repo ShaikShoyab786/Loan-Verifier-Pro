@@ -169,7 +169,8 @@ function PanVerificationPage() {
     toast.success("PAN Verification completed", {
       description: `${activeLabel}'s PAN verification has been saved.`,
     });
-    const __next = nextModuleRoute(useVerificationStore.getState().modules[activeId], "pan");
+    const __st = useVerificationStore.getState();
+    const __next = nextModuleRoute(__st.modules[activeId], "pan", __st.activeCaseId ? __st.cases[__st.activeCaseId]?.loanType : undefined);
     navigate({ to: __next });
   };
 

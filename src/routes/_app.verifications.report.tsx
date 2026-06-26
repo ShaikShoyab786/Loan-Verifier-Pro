@@ -44,6 +44,7 @@ const REPORT_MODULES: { key: ModuleKey; label: string }[] = [
   { key: "salary", label: "Salary Verification" },
   { key: "documents", label: "Document Verification" },
   { key: "business", label: "Business Activity Verification" },
+  { key: "property", label: "Property Details Verification" },
 ];
 
 const EVIDENCE_GROUPS: { key: keyof typeof EVIDENCE_LABELS; label: string }[] = [
@@ -139,7 +140,7 @@ function overallOpinion(c: VerificationCase): { label: string; tone: string } {
   for (const a of c.applicants) {
     const mods = c.modules[a.id];
     for (const m of REPORT_MODULES) {
-      if (!isModuleApplicable(mods, m.key)) continue;
+      if (!isModuleApplicable(mods, m.key, c.loanType)) continue;
       const v = moduleVerdict(mods?.[m.key], m.key);
       if (v === "positive") { pos += 1; touched += 1; }
       else if (v === "negative") { neg += 1; touched += 1; }
@@ -159,7 +160,7 @@ function aggregateModuleVerdict(
   let pos = 0, neg = 0, na = 0, pending = 0, applicable = 0;
   for (const a of c.applicants) {
     const mods = c.modules[a.id];
-    if (!isModuleApplicable(mods, key)) { na += 1; continue; }
+    if (!isModuleApplicable(mods, key, c.loanType)) { na += 1; continue; }
     applicable += 1;
     const m = mods?.[key];
     if (!m || m.status === "not_started") { pending += 1; continue; }
@@ -534,7 +535,7 @@ function applicantVerdict(
   const mods = c.modules[applicantId];
   let pos = 0, neg = 0, applicable = 0;
   for (const m of REPORT_MODULES) {
-    if (!isModuleApplicable(mods, m.key)) continue;
+    if (!isModuleApplicable(mods, m.key, c.loanType)) continue;
     applicable += 1;
     const v = moduleVerdict(mods?.[m.key], m.key);
     if (v === "positive") pos += 1;
@@ -1296,6 +1297,10 @@ const MODULE_ROW_BUILDERS: Record<
     title: "Business Activity Verification",
     rows: (m) => businessRows(m?.business?.business),
   },
+  property: {
+    title: "Property Details Verification",
+    rows: (m) => propertyRows(m?.property?.property),
+  },
   evidence: { title: "", rows: () => [] },
   feedback: { title: "", rows: () => [] },
 };
@@ -1312,7 +1317,7 @@ function ModuleGroupedSections({
       {REPORT_MODULES.map((mod) => {
         // Skip module entirely if not applicable for any applicant
         const anyApplicable = applicants.some((ap) =>
-          isModuleApplicable(caseData.modules[ap.id], mod.key),
+          isModuleApplicable(caseData.modules[ap.id], mod.key, caseData.loanType),
         );
         if (!anyApplicable) return null;
 
@@ -1323,7 +1328,7 @@ function ModuleGroupedSections({
 
             {applicants.map((ap, idx) => {
               const modules = caseData.modules[ap.id];
-              const applicable = isModuleApplicable(modules, mod.key);
+              const applicable = isModuleApplicable(modules, mod.key, caseData.loanType);
               const heading = (
                 <h3 className="text-[13px] font-bold text-slate-900 uppercase tracking-wide border-l-4 border-slate-900 pl-2 mb-2">
                   {ap.label}
@@ -1536,6 +1541,38 @@ function businessRows(d: Record<string, unknown> | undefined): [string, string][
     r("Verifier Remarks", d.verifierRemarks),
     r("Supervisor Remarks", d.supervisorRemarks),
   ];
+}
+
+function propertyRows(d: Record<string, unknown> | undefined): [string, string][] {
+  d = d ?? {};
+  const rows: [string, string][] = [
+    r("Address of Property", d.addressOfProperty),
+    r("Address Matches Application", titleCase(String(d.addressMatchesApplication ?? ""))),
+    r("Name of Owner", d.ownerName),
+    r("Type of Property", d.typeOfProperty),
+    r("Locality", d.locality),
+    r("Ownership", d.ownership),
+    r("Type of Construction", d.typeOfConstruction),
+    r("Stage of Construction", d.stageOfConstruction),
+    r("Independent Access", titleCase(String(d.independentAccess ?? ""))),
+    r("Type of Access", d.accessType),
+    r("Building Usage Type", d.buildingUsageType),
+  ];
+  if (String(d.typeOfConstruction ?? "") === "Flat Under Construction") {
+    rows.push(
+      r("Builder Name", d.builderName),
+      r("Builder Reputation", d.builderReputation),
+      r("Source of Information", d.builderSource),
+      r("Construction Stage", d.builderStage),
+      r("Work in Progress", d.workInProgress),
+      r("Likely Completion Date", d.likelyCompletionDate),
+    );
+  }
+  rows.push(
+    r("Date of Site Visit", d.dateOfSiteVisit),
+    r("Verifier Remarks", d.verifierRemarks),
+  );
+  return rows;
 }
 
 /* ====================== CERTIFICATE PAGE ====================== */
