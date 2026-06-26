@@ -1,8 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { generateText } from "ai";
+import { GoogleGenAI } from "@google/genai";
 import { z } from "zod";
-
-import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
 const ResidenceInput = z.object({
   applicantLabel: z.string().min(1),
@@ -27,16 +25,36 @@ function pruneEmpty(obj: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
+const ai = new GoogleGenAI({
+  apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
+  httpOptions: {
+    apiVersion: "",
+    baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
+  },
+});
+
 async function generateNotes(prompt: string, system: string): Promise<string> {
-  const key = process.env.LOVABLE_API_KEY;
-  if (!key) throw new Error("Missing LOVABLE_API_KEY");
-  const gateway = createLovableAiGatewayProvider(key);
-  const { text } = await generateText({
-    model: gateway("google/gemini-3-flash-preview"),
-    system,
-    prompt,
+  if (
+    !process.env.AI_INTEGRATIONS_GEMINI_API_KEY ||
+    !process.env.AI_INTEGRATIONS_GEMINI_BASE_URL
+  ) {
+    throw new Error(
+      "Gemini AI integration is not configured (missing AI_INTEGRATIONS_GEMINI_* environment variables).",
+    );
+  }
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: prompt,
+    config: {
+      systemInstruction: system,
+      maxOutputTokens: 8192,
+    },
   });
-  return text.trim();
+  const text = (response.text ?? "").trim();
+  if (!text) {
+    throw new Error("Gemini returned an empty response while generating notes.");
+  }
+  return text;
 }
 
 export const generateResidenceNotes = createServerFn({ method: "POST" })
