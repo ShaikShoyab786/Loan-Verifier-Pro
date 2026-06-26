@@ -40,18 +40,21 @@ export const Route = createFileRoute("/_app")({
     if (!data.user) {
       throw redirect({ to: "/auth", search: { redirect: location.href } });
     }
-    // Resolve the user's role(s). RLS lets each user read their own roles.
-    let roles: string[] = [];
+    // Resolve whether the user is a manager via the has_role() function.
+    // We deliberately do NOT select from user_roles directly: that table's RLS
+    // includes a restrictive policy that also blocks SELECT, so a direct read
+    // always returns nothing. has_role() is SECURITY DEFINER and bypasses it.
+    let isManager = false;
     try {
-      const { data: roleRows } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", data.user.id);
-      roles = (roleRows ?? []).map((r) => r.role as string);
+      const { data: hasManager } = await supabase.rpc("has_role", {
+        _user_id: data.user.id,
+        _role: "manager",
+      });
+      isManager = hasManager === true;
     } catch {
-      roles = [];
+      isManager = false;
     }
-    const isManager = roles.includes("manager");
+    const roles: string[] = isManager ? ["manager"] : ["executive"];
     // Lock all field-editing actions for manager sessions before any route renders.
     // Managers review only; this prevents edits even via direct route navigation.
     useVerificationStore.getState().setManagerSession(isManager);

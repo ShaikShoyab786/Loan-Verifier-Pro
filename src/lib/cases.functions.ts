@@ -226,14 +226,14 @@ async function fetchNamesByIds(ids: Array<string | null | undefined>): Promise<M
 /** Throw unless the given user holds the manager role. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function assertManager(supabase: any, userId: string): Promise<void> {
-  const { data, error } = await supabase
-    .from("user_roles")
-    .select("role")
-    .eq("user_id", userId)
-    .eq("role", "manager")
-    .maybeSingle();
+  // Use has_role() (SECURITY DEFINER) rather than selecting user_roles directly:
+  // the table's restrictive RLS policy blocks SELECT for authenticated users.
+  const { data, error } = await supabase.rpc("has_role", {
+    _user_id: userId,
+    _role: "manager",
+  });
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: manager role required");
+  if (data !== true) throw new Error("Forbidden: manager role required");
 }
 
 // -------------------------- LIST (executive's own cases) --------------------------
@@ -314,14 +314,13 @@ export const upsertCase = createServerFn({ method: "POST" })
     // 0. Managers review only — they never own or edit cases. Block their writes
     //    server-side so a manager session can never create a duplicate case row
     //    (case_number + assigned_to lookup would otherwise insert under the manager).
-    const { data: mgrRow, error: mgrErr } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "manager")
-      .maybeSingle();
+    //    Use has_role() — the user_roles table's restrictive RLS blocks direct SELECT.
+    const { data: isMgr, error: mgrErr } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "manager",
+    });
     if (mgrErr) throw new Error(mgrErr.message);
-    if (mgrRow) throw new Error("Forbidden: managers cannot edit cases");
+    if (isMgr === true) throw new Error("Forbidden: managers cannot edit cases");
 
     // 1. Resolve the user's own case row. Case numbers are visible per account,
     //    so another user's VER-YYYY-#### must never be treated as this user's row.

@@ -53,15 +53,30 @@ ALTER TABLE public.user_roles ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users read own roles" ON public.user_roles
   FOR SELECT TO authenticated USING (user_id = auth.uid());
 
--- Lock down writes (prevent privilege escalation) + restrictive deny (defense in depth)
+-- Lock down writes (prevent privilege escalation) + restrictive deny (defense in depth).
+-- NOTE: the restrictive deny must target write commands only. A `FOR ALL ... USING(false)`
+-- restrictive policy also applies to SELECT and would cancel the permissive read policy
+-- above, making it impossible for any user to read their own roles.
 REVOKE INSERT, UPDATE, DELETE ON public.user_roles FROM authenticated, anon, public;
-CREATE POLICY "Block role self-assignment"
+CREATE POLICY "Block role self-insert"
   ON public.user_roles
   AS RESTRICTIVE
-  FOR ALL
+  FOR INSERT
+  TO authenticated, anon
+  WITH CHECK (false);
+CREATE POLICY "Block role self-update"
+  ON public.user_roles
+  AS RESTRICTIVE
+  FOR UPDATE
   TO authenticated, anon
   USING (false)
   WITH CHECK (false);
+CREATE POLICY "Block role self-delete"
+  ON public.user_roles
+  AS RESTRICTIVE
+  FOR DELETE
+  TO authenticated, anon
+  USING (false);
 
 CREATE OR REPLACE FUNCTION public.has_role(_user_id uuid, _role public.app_role)
 RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
