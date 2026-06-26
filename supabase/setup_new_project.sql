@@ -8,7 +8,7 @@
 CREATE TYPE public.app_role AS ENUM ('executive', 'manager');
 CREATE TYPE public.case_status AS ENUM ('draft','in_progress','submitted','approved','rejected');
 CREATE TYPE public.module_status AS ENUM ('not_started','in_progress','completed','not_applicable');
-CREATE TYPE public.module_key AS ENUM ('general','residence','employment','pan','salary','documents','business','evidence','feedback');
+CREATE TYPE public.module_key AS ENUM ('general','residence','employment','pan','salary','documents','business','property','evidence','feedback');
 
 -- ============ UTIL ============
 CREATE OR REPLACE FUNCTION public.set_updated_at()
