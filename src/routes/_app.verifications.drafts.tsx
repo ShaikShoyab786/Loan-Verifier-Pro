@@ -106,7 +106,7 @@ function DraftsPage() {
         </div>
       ) : (
         <div className="rounded-2xl border border-border bg-card overflow-hidden">
-          <div className="grid grid-cols-[1.2fr_1fr_1.2fr_0.9fr_0.9fr_0.8fr_auto] gap-3 px-5 py-3 border-b border-border bg-muted/40 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="hidden sm:grid grid-cols-[1.2fr_1fr_1.2fr_0.9fr_0.9fr_0.8fr_auto] gap-3 px-5 py-3 border-b border-border bg-muted/40 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
             <span>Verification ID</span>
             <span>Loan Type</span>
             <span>Branch</span>
@@ -118,51 +118,107 @@ function DraftsPage() {
           <div className="divide-y divide-border">
             {drafts.map((c) => {
               const meta = CASE_STATUS_META[c.status];
+              const created = new Date(c.createdAt).toLocaleDateString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              });
               return (
-                <div
-                  key={c.id}
-                  className="grid grid-cols-[1.2fr_1fr_1.2fr_0.9fr_0.9fr_0.8fr_auto] gap-3 px-5 py-3 items-center hover:bg-muted/40 transition-colors"
-                >
-                  <button
-                    onClick={() => handleOpen(c.id)}
-                    className="text-left truncate min-w-0"
-                  >
-                    {getBorrowerName(c) ? (
-                      <>
-                        <span className="block text-sm font-semibold text-foreground truncate">{getBorrowerName(c)}</span>
-                        <span className="block font-mono text-[10px] font-medium text-primary truncate">{c.id}</span>
-                      </>
-                    ) : (
-                      <span className="font-mono text-xs font-semibold text-primary hover:underline truncate">{c.id}</span>
-                    )}
-                  </button>
-                  <span className="text-sm truncate">{c.loanType || "—"}</span>
-                  <span className="text-sm truncate">{c.branchName || "—"}</span>
-                  <span className="text-sm tabular-nums">{formatINR(c.loanAmount)}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {new Date(c.createdAt).toLocaleDateString("en-IN", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </span>
-                  <span className={`text-[11px] font-medium px-2 py-1 rounded-md w-fit ${meta.className}`}>
-                    {meta.label}
-                  </span>
-                  <div className="flex items-center gap-1 justify-end">
-                    <Button size="sm" variant="ghost" onClick={() => handleOpen(c.id)} className="h-8">
-                      Open
-                      <ArrowRight className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => setPendingDelete(c.id)}
-                      aria-label="Delete case"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                <div key={c.id}>
+                  {/* Desktop row */}
+                  <div className="hidden sm:grid grid-cols-[1.2fr_1fr_1.2fr_0.9fr_0.9fr_0.8fr_auto] gap-3 px-5 py-3 items-center hover:bg-muted/40 transition-colors">
+                    <button
+                      onClick={() => handleOpen(c.id)}
+                      className="text-left truncate min-w-0"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
+                      {getBorrowerName(c) ? (
+                        <>
+                          <span className="block text-sm font-semibold text-foreground truncate">{getBorrowerName(c)}</span>
+                          <span className="block font-mono text-[10px] font-medium text-primary truncate">{c.id}</span>
+                        </>
+                      ) : (
+                        <span className="font-mono text-xs font-semibold text-primary hover:underline truncate">{c.id}</span>
+                      )}
+                    </button>
+                    <span className="text-sm truncate">{c.loanType || "—"}</span>
+                    <span className="text-sm truncate">{c.branchName || "—"}</span>
+                    <span className="text-sm tabular-nums">{formatINR(c.loanAmount)}</span>
+                    <span className="text-xs text-muted-foreground">{created}</span>
+                    <span className={`text-[11px] font-medium px-2 py-1 rounded-md w-fit ${meta.className}`}>
+                      {meta.label}
+                    </span>
+                    <div className="flex items-center gap-1 justify-end">
+                      <Button size="sm" variant="ghost" onClick={() => handleOpen(c.id)} className="h-8">
+                        Open
+                        <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setPendingDelete(c.id)}
+                        aria-label="Delete case"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Mobile card */}
+                  <div className="sm:hidden px-4 py-4 space-y-3 hover:bg-muted/40 transition-colors">
+                    <div className="flex items-start justify-between gap-3">
+                      <button
+                        onClick={() => handleOpen(c.id)}
+                        className="text-left min-w-0 flex-1"
+                      >
+                        {getBorrowerName(c) ? (
+                          <>
+                            <span className="block text-sm font-semibold text-foreground">{getBorrowerName(c)}</span>
+                            <span className="block font-mono text-[11px] font-medium text-primary mt-0.5 break-all">{c.id}</span>
+                          </>
+                        ) : (
+                          <span className="font-mono text-sm font-semibold text-primary break-all">{c.id}</span>
+                        )}
+                      </button>
+                      <span className={`shrink-0 text-[11px] font-medium px-2 py-1 rounded-md w-fit ${meta.className}`}>
+                        {meta.label}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="min-w-0">
+                        <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Loan Type</span>
+                        <span className="block text-sm truncate">{c.loanType || "—"}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Branch</span>
+                        <span className="block text-sm truncate">{c.branchName || "—"}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Amount</span>
+                        <span className="block text-sm tabular-nums">{formatINR(c.loanAmount)}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Created</span>
+                        <span className="block text-sm">{created}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <Button size="sm" onClick={() => handleOpen(c.id)} className="h-9 flex-1">
+                        Open
+                        <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={() => setPendingDelete(c.id)}
+                        aria-label="Delete case"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );

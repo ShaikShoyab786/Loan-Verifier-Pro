@@ -209,9 +209,10 @@ function ReportPage() {
       const styles = window.getComputedStyle(el);
       const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
       const w = el.getBoundingClientRect().width - horizontalPadding;
-      // Keep the page readable on phones; when that is wider than the screen,
-      // the report shell provides horizontal panning like a normal PDF viewer.
-      const scale = Math.min(1, Math.max(0.52, (w - 8) / A4_PX));
+      // Fit the full A4 page width to the available space so phones never need
+      // horizontal scrolling (like a PDF viewer's "fit to width"). Users can
+      // pinch-zoom the browser to read fine print. Desktop stays at 1:1.
+      const scale = Math.min(1, Math.max(0.3, (w - 8) / A4_PX));
       el.style.setProperty("--pdf-scale", String(scale));
     };
     compute();
