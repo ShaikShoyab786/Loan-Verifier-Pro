@@ -26,20 +26,13 @@ function pruneEmpty(obj: Record<string, unknown>): Record<string, unknown> {
 }
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.AI_INTEGRATIONS_GEMINI_API_KEY,
-  httpOptions: {
-    apiVersion: "",
-    baseUrl: process.env.AI_INTEGRATIONS_GEMINI_BASE_URL,
-  },
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 async function generateNotes(prompt: string, system: string): Promise<string> {
-  if (
-    !process.env.AI_INTEGRATIONS_GEMINI_API_KEY ||
-    !process.env.AI_INTEGRATIONS_GEMINI_BASE_URL
-  ) {
+  if (!process.env.GEMINI_API_KEY) {
     throw new Error(
-      "Gemini AI integration is not configured (missing AI_INTEGRATIONS_GEMINI_* environment variables).",
+      "Gemini is not configured (missing GEMINI_API_KEY environment variable).",
     );
   }
   const response = await ai.models.generateContent({
