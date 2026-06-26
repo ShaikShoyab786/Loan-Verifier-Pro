@@ -58,7 +58,10 @@ function DraftsPage() {
   const drafts = useMemo<VerificationCase[]>(() => {
     return caseOrder
       .map((id) => casesMap[id])
-      .filter((c): c is VerificationCase => !!c && (c.status === "draft" || c.status === "in_progress"));
+      .filter(
+        (c): c is VerificationCase =>
+          !!c && (c.status === "draft" || c.status === "in_progress" || c.status === "rejected"),
+      );
   }, [casesMap, caseOrder]);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
@@ -220,6 +223,17 @@ function DraftsPage() {
                       </Button>
                     </div>
                   </div>
+
+                  {c.status === "rejected" && c.reviewNotes && (
+                    <div className="px-4 sm:px-5 pb-4 sm:pb-3">
+                      <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-destructive">
+                          Returned by manager
+                        </p>
+                        <p className="mt-0.5 text-xs text-foreground">{c.reviewNotes}</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

@@ -1,3 +1,4 @@
 - [Supabase SSR WebSocket + Google OAuth](supabase-ssr-websocket.md) — supabase-js createClient throws under Node <22 (no global WebSocket) in server fns/SSR; polyfill ws in start.ts. Google OAuth moved off Lovable Cloud to native Supabase.
+- [Case identity keys](case-identity-keys.md) — case_number is unique only per executive; manager/cross-executive ops must key on dbId (UUID). loadExternalCase keys by dbId & never markDirty.
 - [Lovable → Replit migration](lovable-to-replit-migration.md) — Lovable AI gateway replaced by Replit managed Gemini integration (@google/genai, AI_INTEGRATIONS_GEMINI_* env); Supabase Site URL must be Replit URL or email-confirm links hit localhost.
 - [loanType-gated modules](loantype-gated-modules.md) — gated module needs loanType threaded through EVERY nextModuleRoute call site or it is silently skipped in the workflow.

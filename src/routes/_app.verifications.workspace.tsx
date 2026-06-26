@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import {
   CASE_STATUS_META,
   MODULE_KEYS,
+  isCaseLocked,
   isModuleApplicable,
   isModuleVisible,
   isPropertyLoanType,
@@ -52,6 +53,7 @@ import {
   type ModuleKey,
   type ModuleStatus,
 } from "@/lib/verification-store";
+import { Lock } from "lucide-react";
 
 
 export const Route = createFileRoute("/_app/verifications/workspace")({
@@ -171,6 +173,7 @@ function WorkspacePage() {
 
 
   const statusMeta = CASE_STATUS_META[activeCase.status];
+  const isLocked = isCaseLocked(activeCase.status);
   const createdLabel = new Date(activeCase.createdAt).toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "short",
@@ -215,20 +218,43 @@ function WorkspacePage() {
               {statusMeta.label}
             </span>
             <div className="flex gap-2 lg:justify-end">
-              <Button variant="outline" className="h-10" onClick={handleSaveDraft}>
-                <Save className="h-4 w-4 mr-2" />
-                Save Draft
-              </Button>
+              {!isLocked && (
+                <Button variant="outline" className="h-10" onClick={handleSaveDraft}>
+                  <Save className="h-4 w-4 mr-2" />
+                  Save Draft
+                </Button>
+              )}
               <Button className="h-10" asChild>
                 <Link to="/verifications/report">
                   <FileDown className="h-4 w-4 mr-2" />
-                  Generate Report
+                  {isLocked ? "View Report" : "Generate Report"}
                 </Link>
               </Button>
             </div>
           </div>
         </div>
       </div>
+
+      {isLocked && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-900 p-4 sm:p-5">
+          <div className="flex items-start gap-3">
+            <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-amber-500/15 text-amber-600">
+              <Lock className="h-4 w-4" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+                {activeCase.status === "approved"
+                  ? "This case has been approved and is locked"
+                  : "This case is awaiting manager approval and is locked"}
+              </p>
+              <p className="text-xs text-amber-800/80 dark:text-amber-300/80 mt-0.5">
+                Editing is disabled while the case is under review. You can still open the report to
+                preview it.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {overallPct === 100 && (
         <div className="rounded-2xl border border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30 dark:border-emerald-900 p-5 sm:p-6">

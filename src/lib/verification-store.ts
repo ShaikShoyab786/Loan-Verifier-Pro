@@ -286,7 +286,26 @@ export type VerificationCase = {
   applicants: Applicant[];
   activeApplicantId: string;
   modules: Record<string, Record<ModuleKey, ModuleData>>;
+  /** Database UUID (review/manager flows). Undefined for purely-local cases. */
+  dbId?: string;
+  /** Display name of the field executive the case is assigned to (manager views). */
+  assignedToName?: string;
+  /** Display name of the manager who last reviewed the case. */
+  reviewedByName?: string;
+  /** ISO timestamp of the last manager review (approve/reject). */
+  reviewedAt?: string | null;
+  /** Manager's review notes (typically a rejection reason). */
+  reviewNotes?: string | null;
 };
+
+/**
+ * A case is locked from further executive editing once it has been submitted
+ * for approval or approved. Rejected cases stay editable so the executive can
+ * fix and resubmit.
+ */
+export function isCaseLocked(status: CaseStatus): boolean {
+  return status === "submitted" || status === "approved";
+}
 
 export const DEFAULT_BANK_NAME = "Bank of India";
 
@@ -321,6 +340,12 @@ type Actions = {
   saveEvidence: (a: string, d: Partial<EvidenceDetails>, s: ModuleStatus) => void;
   saveFeedback: (a: string, d: Partial<FinalFeedbackDetails>, s: ModuleStatus) => void;
   saveDraftActiveCase: () => void;
+  /** Move the active case to "submitted" locally (cloud persistence handled separately). */
+  submitActiveCase: () => void;
+  /** Update a case's status WITHOUT triggering a cloud sync (used after a server write confirms). */
+  setCaseStatusLocal: (id: string, status: CaseStatus, patch?: Partial<VerificationCase>) => void;
+  /** Inject a case fetched from the server (e.g. a manager review) and make it active, without marking it dirty. */
+  loadExternalCase: (caseObj: VerificationCase) => void;
 };
 
 const emptyModules = (): Record<ModuleKey, ModuleData> =>
@@ -542,6 +567,7 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   },
 
   addCoApplicant: () => {
+    if (isActiveLocked()) return;
     set((s) =>
       updateActiveCase(s, (c) => {
         const newId = `co-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -557,6 +583,7 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   },
 
   removeApplicant: (id) => {
+    if (isActiveLocked()) return;
     set((s) =>
       updateActiveCase(s, (c) => {
         if (id === "primary") return c;
@@ -573,6 +600,7 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
   },
 
   setModuleStatus: (applicantId, key, status) => {
+    if (isActiveLocked()) return;
     set((s) =>
       updateActiveCase(s, (c) => ({
         ...c,
@@ -589,17 +617,61 @@ export const useVerificationStore = create<State & Actions & { hydrateAll: (case
     if (cid) markDirty(cid);
   },
 
-  saveGeneral: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "general", "general", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveResidence: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "residence", "residence", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveEmployment: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "employment", "employment", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  savePan: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "pan", "pan", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveSalary: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "salary", "salary", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveDocuments: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "documents", "documents", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveBusiness: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "business", "business", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveProperty: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "property", "property", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveEvidence: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "evidence", "evidence", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
-  saveFeedback: (a, d, st) => { set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "feedback", "feedback", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveGeneral: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "general", "general", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveResidence: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "residence", "residence", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveEmployment: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "employment", "employment", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  savePan: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "pan", "pan", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveSalary: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "salary", "salary", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveDocuments: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "documents", "documents", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveBusiness: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "business", "business", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveProperty: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "property", "property", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveEvidence: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "evidence", "evidence", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+  saveFeedback: (a, d, st) => { if (isActiveLocked()) return; set((s) => updateActiveCase(s, (c) => mergeModule(c, a, "feedback", "feedback", d, st))); const cid = get().activeCaseId; if (cid) markDirty(cid); },
+
+  submitActiveCase: () => {
+    set((s) => {
+      const id = s.activeCaseId;
+      if (!id) return {};
+      const c = s.cases[id];
+      if (!c) return {};
+      const updated: VerificationCase = { ...c, status: "submitted" };
+      return { cases: { ...s.cases, [id]: updated }, ...syncMirror(updated) };
+    });
+    const id = get().activeCaseId;
+    if (id) markDirty(id);
+  },
+
+  setCaseStatusLocal: (id, status, patch) => {
+    set((s) => {
+      const c = s.cases[id];
+      if (!c) return {};
+      const updated: VerificationCase = { ...c, ...patch, status };
+      return {
+        cases: { ...s.cases, [id]: updated },
+        ...(s.activeCaseId === id ? syncMirror(updated) : {}),
+      };
+    });
+  },
+
+  loadExternalCase: (caseObj) => {
+    const key = caseObj.dbId ?? caseObj.id;
+    set((s) => ({
+      cases: { ...s.cases, [key]: caseObj },
+      caseOrder: s.caseOrder.includes(key) ? s.caseOrder : [...s.caseOrder, key],
+      activeCaseId: key,
+      ...syncMirror(caseObj),
+    }));
+    writePersistedActiveCaseId(key);
+    logActive("loadExternalCase", key);
+  },
 }));
+
+/** True when the active case has been submitted/approved and must not be edited. */
+function isActiveLocked(): boolean {
+  const s = useVerificationStore.getState();
+  const c = s.activeCaseId ? s.cases[s.activeCaseId] : null;
+  return !!c && isCaseLocked(c.status);
+}
 
 // ---------------- Cloud sync hooks (driven by CaseSyncProvider) ----------------
 type SyncListeners = {

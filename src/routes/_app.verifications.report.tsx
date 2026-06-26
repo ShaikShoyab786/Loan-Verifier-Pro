@@ -1,7 +1,22 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Download, Printer } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { toast } from "sonner";
+import { ArrowLeft, Download, Printer, Send, CheckCircle2, XCircle, Clock, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { reviewCase, submitCase } from "@/lib/cases.functions";
+import { useCaseSync } from "@/lib/case-sync-provider";
 import {
   FINAL_FEEDBACK_ITEMS,
   isModuleApplicable,
@@ -194,6 +209,16 @@ function ReportPage() {
     () => (activeCase ? labelApplicants(activeCase.applicants) : []),
     [activeCase],
   );
+
+  const { isManager } = Route.useRouteContext();
+  const { flushCase } = useCaseSync();
+  const submitFn = useServerFn(submitCase);
+  const reviewFn = useServerFn(reviewCase);
+  const setCaseStatusLocal = useVerificationStore((s) => s.setCaseStatusLocal);
+  const [submitOpen, setSubmitOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectNotes, setRejectNotes] = useState("");
+  const [actionBusy, setActionBusy] = useState(false);
 
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const pdfRef = useRef<HTMLDivElement | null>(null);
@@ -412,6 +437,62 @@ function ReportPage() {
     }
   };
 
+  const handleSubmitForApproval = async () => {
+    if (!activeCase) return;
+    setActionBusy(true);
+    try {
+      await flushCase(activeCase.id);
+      await submitFn({ data: { caseNumber: activeCase.id } });
+      setCaseStatusLocal(activeCase.id, "submitted");
+      toast.success("Submitted for approval", {
+        description: `Case ${activeCase.id} has been sent to your manager.`,
+      });
+      setSubmitOpen(false);
+      navigate({ to: "/dashboard" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to submit case");
+    } finally {
+      setActionBusy(false);
+    }
+  };
+
+  const handleReview = async (action: "approve" | "reject") => {
+    if (!activeCase?.dbId) {
+      toast.error("Missing case reference — cannot review this case");
+      return;
+    }
+    if (action === "reject" && !rejectNotes.trim()) {
+      toast.error("Please add a note explaining the rejection");
+      return;
+    }
+    setActionBusy(true);
+    try {
+      const res = await reviewFn({
+        data: {
+          caseId: activeCase.dbId,
+          action,
+          notes: action === "reject" ? rejectNotes.trim() : undefined,
+        },
+      });
+      setCaseStatusLocal(activeCase.dbId, res.status, {
+        reviewedAt: res.reviewedAt,
+        reviewNotes: action === "reject" ? rejectNotes.trim() : null,
+      });
+      toast.success(action === "approve" ? "Case approved" : "Case rejected", {
+        description:
+          action === "approve"
+            ? `Case ${activeCase.id} is now available to the executive.`
+            : `Case ${activeCase.id} was returned to the executive.`,
+      });
+      setRejectOpen(false);
+      setRejectNotes("");
+      navigate({ to: "/dashboard" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Failed to review case");
+    } finally {
+      setActionBusy(false);
+    }
+  };
 
   if (!activeCase) return null;
 
@@ -440,30 +521,170 @@ function ReportPage() {
   };
 
 
+  const status = activeCase.status;
+  const canDownload = isManager || status === "approved";
+  const canSubmit = !isManager && (status === "draft" || status === "in_progress" || status === "rejected");
+  const backTo = isManager ? "/dashboard" : "/verifications/workspace";
+  const backLabel = isManager ? "Back to Dashboard" : "Back to Workspace";
+
   return (
     <div className="space-y-4">
       {/* Toolbar */}
       <div className="no-print flex flex-wrap items-center justify-between gap-3">
         <Link
-          to="/verifications/workspace"
+          to={backTo}
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="h-4 w-4" /> Back to Workspace
+          <ArrowLeft className="h-4 w-4" /> {backLabel}
         </Link>
         <div className="flex items-center gap-2">
           <span className="hidden sm:inline text-xs text-muted-foreground">
             PDF · A4 · {activeCase.id}
           </span>
-          <Button variant="outline" onClick={handlePrint} className="h-9">
-            <Printer className="h-4 w-4 mr-2" />
-            Print
-          </Button>
-          <Button onClick={handleDownloadPdf} disabled={isDownloading} className="h-9">
-            <Download className="h-4 w-4 mr-2" />
-            {isDownloading ? "Generating…" : "Download PDF"}
-          </Button>
+
+          {canDownload ? (
+            <>
+              <Button variant="outline" onClick={handlePrint} className="h-9">
+                <Printer className="h-4 w-4 mr-2" />
+                Print
+              </Button>
+              <Button onClick={handleDownloadPdf} disabled={isDownloading} className="h-9">
+                <Download className="h-4 w-4 mr-2" />
+                {isDownloading ? "Generating…" : "Download PDF"}
+              </Button>
+            </>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-border bg-muted/50 px-3 h-9 text-xs text-muted-foreground">
+              <Lock className="h-3.5 w-3.5" />
+              Preview only — download unlocks after approval
+            </span>
+          )}
+
+          {canSubmit && (
+            <Button onClick={() => setSubmitOpen(true)} disabled={actionBusy} className="h-9">
+              <Send className="h-4 w-4 mr-2" />
+              Submit for Approval
+            </Button>
+          )}
+
+          {!isManager && status === "submitted" && (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-300 bg-amber-50 px-3 h-9 text-xs font-medium text-amber-700">
+              <Clock className="h-3.5 w-3.5" />
+              Awaiting approval
+            </span>
+          )}
+
+          {isManager && status === "submitted" && (
+            <>
+              <Button
+                variant="outline"
+                onClick={() => setRejectOpen(true)}
+                disabled={actionBusy}
+                className="h-9 border-destructive/40 text-destructive hover:bg-destructive/5"
+              >
+                <XCircle className="h-4 w-4 mr-2" />
+                Reject
+              </Button>
+              <Button
+                onClick={() => handleReview("approve")}
+                disabled={actionBusy}
+                className="h-9 bg-emerald-600 hover:bg-emerald-700"
+              >
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                Approve
+              </Button>
+            </>
+          )}
+
+          {isManager && status === "approved" && (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-emerald-300 bg-emerald-50 px-3 h-9 text-xs font-medium text-emerald-700">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Approved
+            </span>
+          )}
+          {isManager && status === "rejected" && (
+            <span className="inline-flex items-center gap-1.5 rounded-md border border-destructive/40 bg-destructive/5 px-3 h-9 text-xs font-medium text-destructive">
+              <XCircle className="h-3.5 w-3.5" />
+              Rejected
+            </span>
+          )}
         </div>
       </div>
+
+      {/* Rejection note banner (visible to executive on returned cases) */}
+      {status === "rejected" && activeCase.reviewNotes && (
+        <div className="no-print rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-destructive">
+            Returned by manager
+          </p>
+          <p className="mt-1 text-sm text-foreground">{activeCase.reviewNotes}</p>
+        </div>
+      )}
+      {status === "approved" && !isManager && (
+        <div className="no-print rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3">
+          <p className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-700">
+            <CheckCircle2 className="h-4 w-4" />
+            Approved — you can now download the final report.
+          </p>
+        </div>
+      )}
+
+      {/* Submit-for-approval confirmation */}
+      <AlertDialog open={submitOpen} onOpenChange={setSubmitOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Submit this case for approval?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Once submitted, the case will be locked for editing and sent to your manager for
+              review. You will be able to download the final report after it is approved.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void handleSubmitForApproval();
+              }}
+              disabled={actionBusy}
+            >
+              {actionBusy ? "Submitting…" : "Submit for Approval"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Reject-with-note dialog (manager) */}
+      <AlertDialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject this case</AlertDialogTitle>
+            <AlertDialogDescription>
+              Add a note explaining what needs to be corrected. The executive will see this and can
+              fix and resubmit the case.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Textarea
+            value={rejectNotes}
+            onChange={(e) => setRejectNotes(e.target.value)}
+            placeholder="e.g. Residence photos are unclear; please re-capture and add the neighbour reference."
+            className="min-h-[110px]"
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionBusy}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault();
+                void handleReview("reject");
+              }}
+              disabled={actionBusy || !rejectNotes.trim()}
+              className="bg-destructive hover:bg-destructive/90"
+            >
+              {actionBusy ? "Rejecting…" : "Reject & Return"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div ref={viewportRef} className="report-shell print:py-0">
         <div ref={pdfRef} className="report-pdf-viewport">

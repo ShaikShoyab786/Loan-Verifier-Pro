@@ -40,27 +40,49 @@ export const Route = createFileRoute("/_app")({
     if (!data.user) {
       throw redirect({ to: "/auth", search: { redirect: location.href } });
     }
-    return { user: data.user };
+    // Resolve the user's role(s). RLS lets each user read their own roles.
+    let roles: string[] = [];
+    try {
+      const { data: roleRows } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", data.user.id);
+      roles = (roleRows ?? []).map((r) => r.role as string);
+    } catch {
+      roles = [];
+    }
+    const isManager = roles.includes("manager");
+    return { user: data.user, roles, isManager };
   },
   component: AppLayout,
 });
 
-const navItems = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard };
+
+const executiveNav: NavItem[] = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/verifications/new", label: "New Verification", icon: FilePlus2 },
   { to: "/verifications/drafts", label: "Draft Verifications", icon: FileClock },
   { to: "/verifications/completed", label: "Completed Verifications", icon: FileCheck2 },
   { to: "/reports", label: "Reports", icon: FileBarChart },
   { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
+
+const managerNav: NavItem[] = [
+  { to: "/dashboard", label: "Approvals Dashboard", icon: LayoutDashboard },
+  { to: "/settings", label: "Settings", icon: Settings },
+];
 
 function AppLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutOpen, setLogoutOpen] = useState(false);
-  const { user } = Route.useRouteContext();
+  const { user, isManager } = Route.useRouteContext();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  const navItems = isManager ? managerNav : executiveNav;
+  const roleLabel = isManager ? "Manager" : "Field Executive";
 
   const displayName =
     (user.user_metadata?.full_name as string | undefined) ||
@@ -156,7 +178,7 @@ function AppLayout() {
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-medium truncate text-sidebar-foreground">{displayName}</p>
-              <p className="text-[11px] text-muted-foreground truncate">Field Executive</p>
+              <p className="text-[11px] text-muted-foreground truncate">{roleLabel}</p>
             </div>
             <AlertDialogTrigger asChild>
               <button
