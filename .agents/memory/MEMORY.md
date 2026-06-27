@@ -1,4 +1,5 @@
 - [Supabase SSR WebSocket + Google OAuth](supabase-ssr-websocket.md) — supabase-js createClient throws under Node <22 (no global WebSocket) in server fns/SSR; polyfill ws in start.ts. Google OAuth moved off Lovable Cloud to native Supabase.
+- [Nitro deploy preset](nitro-deploy-preset.md) — vite build skips server output outside Replit; set `nitro: { preset: "node-server" }` in vite.config.ts to deploy on Node hosts (Render). Override ignored inside Replit.
 - [Case identity keys](case-identity-keys.md) — case_number is unique only per executive; manager/cross-executive ops must key on dbId (UUID). loadExternalCase keys by dbId & never markDirty.
 - [user_roles RLS read](user-roles-rls-read.md) — never SELECT user_roles from a user client (restrictive FOR ALL policy blocks SELECT → everyone reads as executive); always use has_role() RPC.
 - [Lovable → Replit migration](lovable-to-replit-migration.md) — Lovable AI gateway replaced by Replit managed Gemini integration (@google/genai, AI_INTEGRATIONS_GEMINI_* env); Supabase Site URL must be Replit URL or email-confirm links hit localhost.

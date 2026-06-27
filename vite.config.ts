@@ -12,6 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Force-enable the Nitro server build for non-Replit hosts (e.g. Render) and
+  // pin the Node server preset so `vite build` emits .output/server/index.mjs.
+  // Inside Replit this override is ignored — the wrapper forces Cloudflare.
+  nitro: { preset: "node-server" },
   vite: {
     server: {
       host: "0.0.0.0",
