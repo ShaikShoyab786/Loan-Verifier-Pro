@@ -38,11 +38,20 @@ function AuthPage() {
     try {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+        if (error) {
+          const isInvalidCredentials = error.message.toLowerCase().includes("invalid login credentials");
+          if (isInvalidCredentials) {
+            toast.error("Unable to sign in", {
+              description: "Check your email and password. If this is a new account, confirm your email first.",
+            });
+            return;
+          }
+          throw error;
+        }
         toast.success("Signed in");
         navigate({ to: "/dashboard" });
       } else {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -51,14 +60,16 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        // Auto sign-in after signup (email verification disabled)
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-        if (signInError) {
-          toast.success("Account created", { description: "Please sign in." });
-          setMode("signin");
-        } else {
+
+        if (data.session) {
           toast.success("Account created");
           navigate({ to: "/dashboard" });
+        } else {
+          setPassword("");
+          setMode("signin");
+          toast.success("Account created", {
+            description: "Check your email to confirm your account, then sign in.",
+          });
         }
       }
     } catch (err) {
