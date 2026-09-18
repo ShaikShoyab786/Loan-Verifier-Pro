@@ -39,10 +39,13 @@ function AuthPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) {
-          const isInvalidCredentials = error.message.toLowerCase().includes("invalid login credentials");
+          const isInvalidCredentials = error.message
+            .toLowerCase()
+            .includes("invalid login credentials");
           if (isInvalidCredentials) {
             toast.error("Unable to sign in", {
-              description: "Check your email and password. If this is a new account, confirm your email first.",
+              description:
+                "Check your email and password. If this is a new account, confirm your email first.",
             });
             return;
           }
