@@ -1,6 +1,16 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ShieldCheck, Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react";
+import {
+  ClipboardList,
+  FileCheck2,
+  FileText,
+  ShieldCheck,
+  Lock,
+  Mail,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -124,7 +134,7 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
-      <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[oklch(0.28_0.09_255)] text-primary-foreground p-12 flex-col justify-between">
+      <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary via-primary to-[oklch(0.28_0.09_255)] text-primary-foreground p-10 xl:p-12 flex-col justify-between">
         <div className="flex items-center gap-3">
           <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/10 backdrop-blur">
             <ShieldCheck className="h-6 w-6" />
@@ -134,15 +144,60 @@ function AuthPage() {
             <p className="text-xs opacity-60">Due Diligence Suite</p>
           </div>
         </div>
-        <div className="relative z-10">
-          <h1 className="text-4xl font-semibold tracking-tight leading-tight">
-            Field verification,<br />engineered for trust.
-          </h1>
-          <p className="mt-4 text-base opacity-80 max-w-md">
-            A premium platform for loan verification executives to collect,
-            validate, and report due diligence with banking-grade precision.
+
+        <div className="relative z-10 my-8 max-w-xl">
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
+              Built for field verification teams
+            </p>
+            <h1 className="mt-4 text-3xl xl:text-4xl font-semibold tracking-tight leading-tight">
+              Prepare applicant reports without Microsoft Word.
+            </h1>
+            <p className="mt-4 text-base leading-7 text-white/80 max-w-lg">
+              Collect applicant information in one place, complete each verification section,
+              and generate a professional report in a few clicks.
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-3" aria-label="How VerifyPro works">
+            {[
+              {
+                icon: ClipboardList,
+                title: "Collect applicant details",
+                description: "Record the information gathered during your field visit.",
+              },
+              {
+                icon: FileCheck2,
+                title: "Complete verification sections",
+                description: "Organize employment, residence, business, and document details.",
+              },
+              {
+                icon: FileText,
+                title: "Generate the final report",
+                description: "Turn the completed information into a ready-to-share report.",
+              },
+            ].map(({ icon: Icon, title, description }, index) => (
+              <div
+                key={title}
+                className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.07] px-4 py-3 transition-colors hover:bg-white/[0.12] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2"
+                style={{ animationDelay: `${index * 100 + 200}ms` }}
+              >
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-white/10 text-white">
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{title}</p>
+                  <p className="mt-0.5 text-xs leading-5 text-white/60">{description}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-6 inline-flex items-center rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/75">
+            Less retyping. Fewer formatting mistakes.
           </p>
         </div>
+
         <p className="text-xs opacity-60 relative z-10">
           © {new Date().getFullYear()} VerifyPro Financial Services
         </p>
@@ -158,6 +213,10 @@ function AuthPage() {
             </div>
             <p className="font-semibold">VerifyPro</p>
           </div>
+
+          <p className="lg:hidden mb-6 text-sm leading-6 text-muted-foreground">
+            Collect applicant information and generate verification reports without manual Word editing.
+          </p>
 
           <h2 className="text-2xl font-semibold tracking-tight">
             {mode === "signin" ? "Welcome back" : "Create your account"}
