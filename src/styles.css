@@ -156,6 +156,252 @@
 }
 
 /* ============================================================
+   VerifyPro authentication experience
+   ============================================================ */
+.auth-page {
+  isolation: isolate;
+}
+
+.auth-brand-panel {
+  background:
+    radial-gradient(circle at 72% 18%, oklch(0.62 0.16 253 / 0.18), transparent 34%),
+    radial-gradient(circle at 16% 86%, oklch(0.52 0.16 248 / 0.16), transparent 38%),
+    linear-gradient(135deg, oklch(0.37 0.15 258), oklch(0.27 0.1 255));
+}
+
+.auth-brand-grid {
+  background-image:
+    linear-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.06) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom right, black, transparent 70%);
+}
+
+.auth-brand-orb {
+  background: oklch(0.78 0.12 245 / 0.1);
+  filter: blur(58px);
+  animation: auth-orb-drift 18s ease-in-out infinite alternate;
+}
+
+.auth-brand-orb-two {
+  animation-delay: -8s;
+  background: oklch(0.52 0.2 278 / 0.12);
+}
+
+.auth-brand-mark {
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.16),
+    0 10px 28px oklch(0.1 0.1 255 / 0.12);
+  transition: transform 220ms ease, background-color 220ms ease, box-shadow 220ms ease;
+}
+
+.auth-brand-mark:hover {
+  background-color: oklch(1 0 0 / 0.16);
+  box-shadow:
+    inset 0 1px 0 oklch(1 0 0 / 0.2),
+    0 12px 32px oklch(0.1 0.1 255 / 0.2);
+  transform: translateY(-2px);
+}
+
+.auth-hero-reveal,
+.auth-form-shell {
+  animation: auth-content-reveal 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.auth-feature-card {
+  animation: auth-content-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: 0 12px 28px -20px oklch(0.1 0.12 255 / 0.7);
+  transition:
+    transform 240ms ease,
+    border-color 240ms ease,
+    background-color 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.auth-feature-card:hover {
+  background-color: oklch(1 0 0 / 0.12);
+  border-color: oklch(1 0 0 / 0.22);
+  box-shadow: 0 16px 30px -20px oklch(0.05 0.08 255 / 0.9);
+  transform: translateY(-3px);
+}
+
+.auth-feature-icon {
+  transition: transform 240ms ease, background-color 240ms ease, box-shadow 240ms ease;
+}
+
+.auth-feature-card:hover .auth-feature-icon {
+  background-color: oklch(1 0 0 / 0.16);
+  box-shadow: 0 0 0 5px oklch(1 0 0 / 0.04), 0 0 22px oklch(0.72 0.14 245 / 0.2);
+  transform: translateY(-1px);
+}
+
+.auth-form-panel {
+  background:
+    radial-gradient(circle at 80% 10%, oklch(0.72 0.12 250 / 0.08), transparent 26%),
+    linear-gradient(145deg, oklch(0.995 0.004 250), oklch(0.975 0.012 250));
+}
+
+.auth-form-shell {
+  animation-delay: 100ms;
+}
+
+.auth-tabs {
+  height: 46px;
+  padding: 4px;
+  border: 1px solid var(--color-border);
+  background-color: oklch(0.965 0.012 250 / 0.86);
+  box-shadow: inset 0 1px 2px oklch(0.2 0.04 255 / 0.04);
+}
+
+.auth-tab {
+  height: 36px;
+  border-radius: 8px;
+  color: var(--color-muted-foreground);
+  transition: background-color 220ms ease, color 220ms ease, box-shadow 220ms ease;
+}
+
+.auth-tab[data-state="active"] {
+  color: var(--color-foreground);
+  box-shadow: 0 2px 7px oklch(0.18 0.04 255 / 0.1);
+}
+
+.auth-input {
+  border-color: oklch(0.88 0.014 250);
+  background-color: oklch(1 0 0 / 0.72);
+  border-radius: 0.75rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.auth-input:hover {
+  border-color: oklch(0.76 0.035 255);
+}
+
+.auth-input:focus-visible {
+  border-color: var(--color-ring);
+  background-color: var(--color-background);
+  box-shadow: 0 0 0 3px oklch(0.38 0.14 258 / 0.12);
+}
+
+.auth-password-toggle {
+  border-radius: 0.375rem;
+  padding: 0.25rem;
+  transition: color 180ms ease, background-color 180ms ease;
+}
+
+.auth-password-toggle:hover,
+.auth-password-toggle:focus-visible {
+  color: var(--color-foreground);
+  background-color: var(--color-accent);
+}
+
+.auth-password-toggle:focus-visible,
+.auth-secondary-link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 3px;
+}
+
+.auth-submit-button {
+  border-radius: 0.75rem;
+  background: linear-gradient(135deg, oklch(0.4 0.15 258), oklch(0.34 0.13 258));
+  box-shadow: 0 10px 20px -12px oklch(0.25 0.14 258 / 0.9);
+  transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.auth-submit-button:hover {
+  background: linear-gradient(135deg, oklch(0.44 0.16 258), oklch(0.38 0.14 258));
+  box-shadow: 0 14px 24px -12px oklch(0.25 0.14 258 / 0.95);
+  transform: translateY(-1px);
+}
+
+.auth-submit-button:active {
+  transform: translateY(1px);
+}
+
+.auth-secondary-link {
+  color: var(--color-primary);
+  transition: color 180ms ease;
+}
+
+.auth-secondary-link:hover {
+  color: oklch(0.3 0.15 258);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-google-button {
+  border-color: oklch(0.87 0.014 250);
+  border-radius: 0.75rem;
+  background-color: oklch(1 0 0 / 0.72);
+  box-shadow: 0 5px 14px -12px oklch(0.15 0.05 255 / 0.7);
+  transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.auth-google-button:hover {
+  border-color: oklch(0.76 0.035 255);
+  background-color: var(--color-background);
+  box-shadow: 0 10px 18px -14px oklch(0.15 0.05 255 / 0.8);
+  transform: translateY(-1px);
+}
+
+.auth-google-mark {
+  display: inline-grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  place-items: center;
+  border-radius: 999px;
+  color: #4285f4;
+  font-family: Arial, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.auth-security-note {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+@keyframes auth-content-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes auth-orb-drift {
+  from {
+    transform: translate3d(-8px, 5px, 0) scale(0.98);
+  }
+  to {
+    transform: translate3d(10px, -8px, 0) scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-brand-orb,
+  .auth-hero-reveal,
+  .auth-form-shell,
+  .auth-feature-card {
+    animation: none !important;
+  }
+
+  .auth-brand-mark,
+  .auth-feature-card,
+  .auth-feature-icon,
+  .auth-input,
+  .auth-submit-button,
+  .auth-google-button {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================================
    Mobile verification workflow utilities
    ============================================================ */
 @media (max-width: 767px) {

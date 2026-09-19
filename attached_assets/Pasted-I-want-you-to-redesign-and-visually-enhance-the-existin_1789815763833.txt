@@ -1,0 +1,487 @@
+I want you to redesign and visually enhance the existing VerifyPro login/sign-up page.
+
+IMPORTANT:
+- Do NOT change any existing authentication logic, API calls, routes, form submission behavior, validation, database logic, or functionality.
+- Do NOT remove any existing fields or features.
+- This is primarily a UI/UX and visual enhancement task.
+- First inspect the existing project structure and identify the exact login/auth page and its existing styling.
+- Make changes directly in the existing implementation rather than creating a separate demo page.
+- Preserve the current VerifyPro branding, content, and overall two-column layout.
+
+DESIGN GOAL:
+Transform the current page into a premium, modern enterprise SaaS / fintech-style authentication experience.
+
+The current page has:
+- Left blue branding/information panel
+- Right authentication panel
+- VerifyPro logo/name
+- "Built for field verification teams"
+- Three feature cards
+- Sign in / Sign up tabs
+- Email and password fields
+- Sign in securely button
+- Forgot password
+- Continue with Google
+- Enterprise-grade encryption message
+
+Keep this information, but make the experience significantly more polished and visually impressive.
+
+==================================================
+1. OVERALL VISUAL STYLE
+==================================================
+
+Use a premium enterprise SaaS aesthetic.
+
+Design language:
+- Modern
+- Trustworthy
+- Professional
+- Premium
+- Clean
+- Slightly futuristic
+- Financial-services / compliance / verification product feel
+
+Avoid:
+- Excessive gradients
+- Excessive glassmorphism
+- Neon colors
+- Cartoonish effects
+- Excessive animations
+- Huge shadows
+- Overly rounded UI everywhere
+
+The final result should look like a product that could realistically be used by a professional financial institution or verification company.
+
+Use:
+- Deep navy / royal blue
+- White
+- Very subtle blue gradients
+- Soft borders
+- Subtle shadows
+- High-quality typography
+- Excellent spacing
+- Strong visual hierarchy
+
+==================================================
+2. LEFT BRANDING PANEL
+==================================================
+
+Improve the existing blue panel substantially.
+
+Keep the blue identity, but create a more sophisticated background.
+
+Use:
+- Deep navy-to-blue gradient
+- Very subtle radial gradients
+- Soft glowing blue areas
+- Extremely subtle abstract geometric patterns
+- Very subtle floating/blurred circles or particles in the background
+
+The background effects should be subtle and professional.
+
+Add a very slow ambient animation to the background:
+- blurred gradient blobs moving extremely slowly
+- opacity around 5–12%
+- no distracting movement
+
+Do NOT use heavy particle animations that reduce readability.
+
+==================================================
+3. VERIFYPRO BRAND HEADER
+==================================================
+
+Improve the VerifyPro logo area.
+
+Keep:
+VerifyPro
+Due Diligence Suite
+
+Make the shield icon look more premium:
+- subtle glow
+- slightly larger icon container
+- smooth hover effect
+
+The logo area should immediately communicate:
+Security + Verification + Enterprise
+
+==================================================
+4. HERO SECTION
+==================================================
+
+Keep the existing headline:
+
+"Prepare applicant reports without Microsoft Word."
+
+Make this the strongest visual element on the left side.
+
+Improve:
+- typography
+- font weight
+- line height
+- spacing
+- responsive sizing
+
+Add a very subtle text entrance animation when the page loads:
+- opacity 0 → 1
+- translateY 10px → 0
+- duration around 500–700ms
+
+Do not make the animation distracting.
+
+The description below should have better typography and spacing.
+
+==================================================
+5. FEATURE CARDS
+==================================================
+
+Redesign the three feature cards:
+
+1. Collect applicant details
+2. Complete verification sections
+3. Generate the final report
+
+Make them look like premium SaaS feature cards.
+
+Use:
+- translucent blue/white borders
+- subtle background variation
+- soft shadows
+- improved icon containers
+- better spacing
+- subtle hover interaction
+
+On hover:
+- card moves upward approximately 2–4px
+- border becomes slightly brighter
+- icon container gets a subtle glow
+- transition around 200–300ms
+
+Do NOT make them bounce or scale aggressively.
+
+Add a very subtle staggered entrance animation:
+Card 1 → Card 2 → Card 3
+
+Each should appear approximately 80–120ms after the previous one.
+
+==================================================
+6. RIGHT AUTHENTICATION PANEL
+==================================================
+
+The right side should feel like a premium authentication experience.
+
+Keep the clean white/light background.
+
+Improve the background with:
+- extremely subtle radial blue gradient
+- very light decorative shapes
+- almost invisible background texture if appropriate
+
+The form should remain highly readable.
+
+Create a centered authentication container with a refined maximum width.
+
+Improve:
+- heading typography
+- subtitle
+- tab switcher
+- field spacing
+- button design
+- Google button
+- security message
+
+==================================================
+7. SIGN IN / SIGN UP TOGGLE
+==================================================
+
+Keep the existing Sign in / Sign up functionality.
+
+Redesign the toggle as a premium segmented control.
+
+Requirements:
+- Smooth sliding/active indicator
+- Subtle shadow
+- Clean active state
+- Smooth transition
+- Keyboard accessible
+- Do not break the existing switching functionality
+
+The active tab should feel clearly selected without using overly bright colors.
+
+==================================================
+8. INPUT FIELDS
+==================================================
+
+Make the email and password inputs much more polished.
+
+Use:
+- subtle border
+- soft shadow
+- 12–14px border radius
+- comfortable height
+- clean icons
+- proper spacing
+
+On focus:
+- blue border
+- subtle blue outer glow
+- smooth transition
+
+On hover:
+- slightly darker border
+
+Make sure:
+- password visibility toggle continues working
+- existing validation continues working
+- input states remain accessible
+
+If there are validation/error states already implemented, improve their visual presentation without changing their logic.
+
+==================================================
+9. SIGN IN BUTTON
+==================================================
+
+Make "Sign in securely" the main CTA.
+
+Design it as a premium enterprise button.
+
+Use:
+- deep blue background
+- subtle gradient if appropriate
+- smooth shadow
+- strong typography
+- 12–14px radius
+
+Hover:
+- slightly brighter blue
+- subtle elevation
+- smooth transition
+
+Active:
+- slight downward movement
+
+Loading:
+- if existing loading functionality exists, preserve it
+- show a polished spinner/loading state
+
+Do NOT change the existing button functionality.
+
+==================================================
+10. FORGOT PASSWORD
+==================================================
+
+Make "Forgot your password?" look like a proper secondary action.
+
+Use:
+- subtle blue color
+- smooth hover transition
+- clear focus state
+
+Do not make it visually compete with the primary CTA.
+
+==================================================
+11. GOOGLE AUTH BUTTON
+==================================================
+
+Keep "Continue with Google".
+
+Redesign it as a premium secondary button.
+
+Use:
+- white background
+- subtle border
+- soft shadow
+- proper Google icon
+- clean typography
+
+Hover:
+- subtle background change
+- slightly elevated appearance
+
+Do not break the existing Google authentication functionality.
+
+==================================================
+12. SECURITY MESSAGE
+==================================================
+
+Improve:
+
+"Protected by enterprise-grade encryption."
+
+Make this look like a small trust indicator.
+
+Add a subtle security/shield/lock visual if an appropriate existing icon library is already available.
+
+Keep the message understated.
+
+==================================================
+13. MICRO-INTERACTIONS
+==================================================
+
+Add polished micro-interactions throughout the page.
+
+Examples:
+
+- Buttons have smooth hover transitions
+- Inputs have smooth focus transitions
+- Cards have subtle elevation on hover
+- Tab indicator slides smoothly
+- Icons have very subtle hover movement
+- Page content fades/slides in on initial load
+
+Keep animations fast and professional.
+
+Use CSS transitions and lightweight animations where possible.
+
+Avoid animation libraries unless the project already uses one.
+
+==================================================
+14. PAGE LOAD ANIMATION
+==================================================
+
+Add a premium initial page reveal.
+
+Suggested sequence:
+
+Left branding:
+- logo fades in
+- hero text fades/slides in
+- feature cards appear sequentially
+
+Right authentication:
+- authentication card/container fades in
+- slight translateY movement
+
+Animation duration:
+400–700ms
+
+Use easing such as:
+ease-out
+
+Respect:
+prefers-reduced-motion
+
+If the user has reduced motion enabled, disable non-essential animations.
+
+==================================================
+15. RESPONSIVE DESIGN
+==================================================
+
+This is very important.
+
+Desktop:
+- Two-column layout similar to current screenshot
+
+Tablet:
+- Reduce spacing
+- Maintain both sections if there is enough room
+
+Mobile:
+- Stack the layout vertically
+- Authentication section should be immediately usable
+- Branding section should become a compact hero/header
+- Do not make users scroll through a huge branding section before seeing the login form
+
+Make sure:
+- no horizontal overflow
+- inputs remain usable
+- buttons remain full-width where appropriate
+- typography scales correctly
+- feature cards remain readable
+
+==================================================
+16. ACCESSIBILITY
+==================================================
+
+Do not sacrifice accessibility for aesthetics.
+
+Ensure:
+- sufficient color contrast
+- visible keyboard focus states
+- semantic buttons
+- proper labels
+- accessible form fields
+- aria attributes where appropriate
+- reduced-motion support
+
+Do not remove existing accessibility features.
+
+==================================================
+17. CODE QUALITY
+==================================================
+
+Before editing:
+1. Inspect the existing authentication page.
+2. Identify the components/styles used.
+3. Reuse existing components where possible.
+4. Check which icon library is already installed.
+5. Avoid installing unnecessary dependencies.
+
+After editing:
+- Remove unused CSS/classes/imports.
+- Keep styles organized.
+- Avoid duplicate styles.
+- Keep the implementation maintainable.
+- Do not rewrite unrelated parts of the application.
+
+==================================================
+18. IMPORTANT FUNCTIONALITY CHECK
+==================================================
+
+After the UI redesign, verify that all existing functionality still works:
+
+- Sign in
+- Sign up
+- Email input
+- Password input
+- Password visibility toggle
+- Forgot password
+- Google authentication
+- Form validation
+- Loading states
+- Error states
+- Navigation/routes
+- Existing API requests
+- Existing authentication state
+
+DO NOT MOCK ANY FUNCTIONALITY.
+
+==================================================
+19. FINAL VISUAL TARGET
+==================================================
+
+The final page should feel like:
+
+"Enterprise-grade financial verification software"
+
+rather than:
+
+"Generic login template"
+
+Think:
+- premium fintech SaaS
+- modern compliance platform
+- professional B2B software
+- secure document/verification platform
+
+Keep the existing blue VerifyPro identity, but make the UI feel substantially more premium, polished, interactive, and production-ready.
+
+IMPORTANT:
+Do not simply add more colors or random animations.
+
+Focus on:
+visual hierarchy
+spacing
+typography
+depth
+subtle motion
+micro-interactions
+professional component styling
+responsive behavior
+trust/security visual language
+
+After implementation, run the application and inspect the page visually at:
+- desktop width
+- tablet width
+- mobile width
+
+Fix any visual issues you find before finishing.
