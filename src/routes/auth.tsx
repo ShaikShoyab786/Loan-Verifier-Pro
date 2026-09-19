@@ -157,7 +157,7 @@ function AuthPage() {
               Built for field verification teams
             </p>
             <h1 className="mt-4 max-w-lg text-3xl font-semibold leading-[1.1] tracking-[-0.02em] text-white xl:text-[2.75rem]">
-              Prepare applicant reports without Microsoft Word.
+              Prepare <span className="auth-headline-accent">Due Diligence</span> reports without Microsoft Word.
             </h1>
             <p className="mt-5 max-w-lg text-base leading-7 text-white/75">
               Collect applicant information in one place, complete each verification section,

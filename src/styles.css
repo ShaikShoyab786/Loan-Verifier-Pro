@@ -207,6 +207,15 @@
   animation: auth-hero-reveal 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.auth-headline-accent {
+  color: oklch(0.86 0.12 218);
+  text-decoration-line: underline;
+  text-decoration-color: oklch(0.72 0.14 218 / 0.8);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 7px;
+  text-shadow: 0 0 22px oklch(0.68 0.15 218 / 0.18);
+}
+
 .auth-feature-card {
   animation: auth-feature-reveal 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
   box-shadow: 0 12px 28px -20px oklch(0.1 0.12 255 / 0.7);
