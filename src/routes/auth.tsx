@@ -134,7 +134,7 @@ function AuthPage() {
 
   return (
     <div className="auth-page min-h-screen grid lg:grid-cols-2 bg-background">
-      <div className="auth-brand-panel hidden lg:flex relative overflow-hidden text-primary-foreground p-10 xl:p-12 flex-col justify-between">
+      <div className="auth-brand-panel relative flex min-h-[430px] overflow-hidden p-6 text-primary-foreground flex-col justify-between sm:p-10 lg:min-h-screen xl:p-12">
         <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
           <div className="auth-brand-grid absolute inset-0 opacity-30" />
           <div className="auth-brand-orb auth-brand-orb-one absolute -right-32 top-16 h-96 w-96 rounded-full" />
@@ -151,7 +151,7 @@ function AuthPage() {
           </div>
         </div>
 
-        <div className="relative z-10 my-8 max-w-xl">
+        <div className="relative z-10 my-10 max-w-xl lg:my-8">
           <div className="auth-hero-reveal">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/60">
               Built for field verification teams
@@ -165,7 +165,7 @@ function AuthPage() {
             </p>
           </div>
 
-          <div className="mt-8 grid gap-3" aria-label="How VerifyPro works">
+          <div className="mt-8 hidden gap-3 sm:grid" aria-label="How VerifyPro works">
             {[
               {
                 icon: ClipboardList,
